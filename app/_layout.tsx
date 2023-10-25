@@ -1,3 +1,4 @@
+import { useEffect } from 'react'
 import {
   useFonts,
   Poppins_200ExtraLight,
@@ -5,32 +6,35 @@ import {
   Poppins_700Bold,
 } from '@expo-google-fonts/poppins'
 import { SplashScreen, Stack } from 'expo-router'
-import { StatusBar } from 'expo-status-bar'
+
+SplashScreen.preventAutoHideAsync()
 
 export default function Layout() {
-  const [hasLoadedFonts] = useFonts({
+  const [hasLoadedFonts, hasErrorOnLoadFonts] = useFonts({
     Poppins_200ExtraLight,
     Poppins_400Regular,
     Poppins_700Bold,
   })
 
-  if (!hasLoadedFonts) {
-    return SplashScreen.hideAsync()
+  useEffect(() => {
+    if (hasLoadedFonts || hasErrorOnLoadFonts) {
+      SplashScreen.hideAsync()
+    }
+  }, [hasLoadedFonts, hasErrorOnLoadFonts])
+
+  if (!hasLoadedFonts && !hasErrorOnLoadFonts) {
+    return null
   }
 
   return (
-    <>
-      <StatusBar style="auto" translucent />
-
-      <Stack
-        screenOptions={{
-          headerShown: false,
-          contentStyle: { backgroundColor: 'transparent' },
-          animation: 'fade',
-        }}
-      >
-        <Stack.Screen name="index" />
-      </Stack>
-    </>
+    <Stack
+      screenOptions={{
+        headerShown: false,
+        animation: 'fade',
+      }}
+    >
+      <Stack.Screen name="index" />
+      <Stack.Screen name="home" />
+    </Stack>
   )
 }

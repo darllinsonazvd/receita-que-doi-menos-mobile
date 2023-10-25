@@ -12,6 +12,10 @@ module.exports = {
         primary: '#FECC01',
         secondary: '#932743',
       },
+      backgroundImage: {
+        gradient:
+          'linear-gradient(90deg, rgba(254,204,1,1) 0%, rgba(147,39,67,1) 100%);',
+      },
     },
   },
   plugins: [],
