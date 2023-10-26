@@ -11,6 +11,7 @@ module.exports = {
       colors: {
         primary: '#FECC01',
         secondary: '#932743',
+        foreground: '#FEF5C3',
       },
       backgroundImage: {
         gradient:

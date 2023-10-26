@@ -18,7 +18,7 @@ export default function App() {
       extraHeight={16}
       className="bg-secondary"
     >
-      <View className="flex-1 items-center bg-primary">
+      <View className="bg-foreground flex-1 items-center">
         <StatusBar style="auto" />
 
         <Image
