@@ -5,7 +5,7 @@ import Meals from '../../src/assets/img/meals.svg'
 
 export default function Home() {
   return (
-    <View className="flex-1 bg-zinc-50">
+    <View className="flex-1 bg-zinc-100">
       <StatusBar style="dark" />
 
       <ScrollView className="flex-1">

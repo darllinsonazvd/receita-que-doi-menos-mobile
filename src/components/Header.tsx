@@ -9,7 +9,7 @@ export function Header() {
 
   return (
     <View
-      className="fixed left-0 top-0 w-full flex-col bg-white px-4 pb-2 shadow-md"
+      className="fixed left-0 top-0 w-full flex-col bg-zinc-50 px-4 pb-2 shadow-md"
       style={{ paddingTop: top }}
     >
       <View className="flex-row items-center">
@@ -24,7 +24,7 @@ export function Header() {
           </TouchableOpacity>
         </View>
       </View>
-      <View className="mt-4 w-full flex-row items-center rounded-lg bg-zinc-200 p-2">
+      <View className="mt-4 w-full flex-row items-center rounded-full bg-zinc-200 px-3 py-2">
         <Ionicons name="search-outline" size={22} color="#191919" />
         <TextInput
           className="ml-2 flex-1 font-body text-base text-zinc-900"
