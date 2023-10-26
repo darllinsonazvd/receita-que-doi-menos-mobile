@@ -9,6 +9,8 @@
     "web": "expo start --web"
   },
   "dependencies": {
+    "@expo-google-fonts/baloo-2": "^0.2.3",
+    "@expo-google-fonts/mouse-memoirs": "^0.2.3",
     "@expo-google-fonts/poppins": "^0.2.3",
     "expo": "~49.0.15",
     "expo-app-loading": "^2.1.1",

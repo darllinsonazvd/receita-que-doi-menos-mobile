@@ -12,8 +12,8 @@ export default function Home() {
         <View className="items-center justify-center pt-8">
           <Meals />
 
-          <Text className="mt-2 font-title text-xl text-zinc-900">
-            Receitas da Comunidade
+          <Text className="font-mouse mt-2 text-2xl text-zinc-900">
+            Mais populares
           </Text>
         </View>
       </ScrollView>

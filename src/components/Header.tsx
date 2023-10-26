@@ -9,26 +9,28 @@ export function Header() {
 
   return (
     <View
-      className="fixed left-0 top-0 w-full flex-col bg-primary px-4 pb-2 shadow-sm"
+      className="fixed left-0 top-0 w-full flex-col bg-white px-4 pb-2 shadow-md"
       style={{ paddingTop: top }}
     >
       <View className="flex-row items-center">
         <LogoText />
 
-        <View className="flex-1 flex-row justify-end">
+        <View className="flex-1 flex-row justify-end gap-1">
           <TouchableOpacity activeOpacity={0.7}>
-            <Ionicons name="person-circle-outline" size={30} color="#932743" />
+            <Ionicons name="add-outline" size={30} color="#191919" />
+          </TouchableOpacity>
+          <TouchableOpacity activeOpacity={0.7}>
+            <Ionicons name="person-circle-outline" size={30} color="#191919" />
           </TouchableOpacity>
         </View>
       </View>
-      <View className="mt-4 w-full flex-row items-center rounded-lg bg-white/30 p-2">
-        <Ionicons name="search-outline" size={22} color="#932743" />
+      <View className="mt-4 w-full flex-row items-center rounded-lg bg-zinc-200 p-2">
+        <Ionicons name="search-outline" size={22} color="#191919" />
         <TextInput
-          className="ml-2 flex-1 font-body text-sm text-secondary"
-          placeholder="Pesquise por receitas..."
-          placeholderTextColor="#932743"
-          clearButtonMode="always"
-          cursorColor="#932743"
+          className="ml-2 flex-1 font-body text-base text-zinc-900"
+          placeholder="Procurar receita de hoje..."
+          placeholderTextColor="#191919"
+          cursorColor="#191919"
           returnKeyType="search"
         />
       </View>

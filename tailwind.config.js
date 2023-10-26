@@ -4,15 +4,20 @@ module.exports = {
   theme: {
     extend: {
       fontFamily: {
-        title: 'Poppins_700Bold',
-        body: 'Poppins_400Regular',
-        alt: 'Poppins_200ExtraLight',
+        title: 'Baloo2_700Bold',
+        body: 'Baloo2_400Regular',
+        mouse: 'MouseMemoirs_400Regular',
       },
       colors: {
-        primary: '#FECC01',
+        primary: '#FFD900',
         secondary: '#932743',
-        foreground: '#FEF5C3',
-        darkYellow: '#edbf02',
+        foreground: '#F3FF00',
+        success: '#13B105',
+        danger: '#DE0000',
+        info: '#57BBD1',
+      },
+      backgroundImage: {
+        woman: "url('./src/assets/img/bg.jpg')",
       },
     },
   },

@@ -1,19 +1,19 @@
 import { useEffect } from 'react'
 import {
   useFonts,
-  Poppins_200ExtraLight,
-  Poppins_400Regular,
-  Poppins_700Bold,
-} from '@expo-google-fonts/poppins'
+  Baloo2_400Regular,
+  Baloo2_700Bold,
+} from '@expo-google-fonts/baloo-2'
+import { MouseMemoirs_400Regular } from '@expo-google-fonts/mouse-memoirs'
 import { Slot, SplashScreen } from 'expo-router'
 
 SplashScreen.preventAutoHideAsync()
 
 export default function Layout() {
   const [hasLoadedFonts, hasErrorOnLoadFonts] = useFonts({
-    Poppins_200ExtraLight,
-    Poppins_400Regular,
-    Poppins_700Bold,
+    Baloo2_400Regular,
+    Baloo2_700Bold,
+    MouseMemoirs_400Regular,
   })
 
   useEffect(() => {
