@@ -5,7 +5,7 @@ import {
   Poppins_400Regular,
   Poppins_700Bold,
 } from '@expo-google-fonts/poppins'
-import { SplashScreen, Stack } from 'expo-router'
+import { Slot, SplashScreen } from 'expo-router'
 
 SplashScreen.preventAutoHideAsync()
 
@@ -27,14 +27,10 @@ export default function Layout() {
   }
 
   return (
-    <Stack
+    <Slot
       screenOptions={{
-        headerShown: false,
-        animation: 'fade',
+        animation: 'simple_push',
       }}
-    >
-      <Stack.Screen name="index" />
-      <Stack.Screen name="home" />
-    </Stack>
+    />
   )
 }

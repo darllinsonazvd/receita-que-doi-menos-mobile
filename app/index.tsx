@@ -18,8 +18,8 @@ export default function App() {
       extraHeight={16}
       className="bg-secondary"
     >
-      <View className="bg-foreground flex-1 items-center">
-        <StatusBar style="auto" />
+      <View className="flex-1 items-center bg-foreground">
+        <StatusBar style="dark" />
 
         <Image
           source={logoFull}
@@ -34,20 +34,22 @@ export default function App() {
           </Text>
 
           <TextInput
-            className="mt-4 w-full rounded-lg border border-white p-3 font-body text-base text-white placeholder:text-white"
+            className="mt-4 w-full rounded-lg border border-white p-3 font-body text-base text-white"
             placeholder="Digite seu email"
             placeholderTextColor="#fff"
             returnKeyType="next"
             keyboardAppearance="default"
             autoComplete="email"
             enterKeyHint="next"
+            cursorColor="#fff"
           />
           <TextInput
-            className="mt-4 w-full rounded-lg border border-white p-3 font-body text-base text-white placeholder:text-white"
+            className="mt-4 w-full rounded-lg border border-white p-3 font-body text-base text-white"
             placeholder="Digite sua senha"
             placeholderTextColor="#fff"
             keyboardAppearance="default"
             secureTextEntry
+            cursorColor="#fff"
           />
 
           <TouchableOpacity

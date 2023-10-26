@@ -1,6 +1,6 @@
 /** @type {import('tailwindcss').Config} */
 module.exports = {
-  content: ['./App.tsx', './app/**/*.tsx'],
+  content: ['./app/**/*.tsx', './src/**/*.tsx'],
   theme: {
     extend: {
       fontFamily: {
@@ -12,10 +12,7 @@ module.exports = {
         primary: '#FECC01',
         secondary: '#932743',
         foreground: '#FEF5C3',
-      },
-      backgroundImage: {
-        gradient:
-          'linear-gradient(90deg, rgba(254,204,1,1) 0%, rgba(147,39,67,1) 100%);',
+        darkYellow: '#edbf02',
       },
     },
   },
