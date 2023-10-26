@@ -42,11 +42,11 @@ export default function App() {
             <StyledLogo />
           </View>
 
-          <View className="mt-48 items-center justify-center">
+          <View className="ml-4 mt-48 flex-1">
             <Welcome />
           </View>
 
-          <View className="mt-4 flex-1 flex-col rounded-t-[38px] bg-zinc-100 px-8 py-6">
+          <View className="mt-3 flex-1 flex-col rounded-t-[38px] bg-zinc-100 px-8 py-6">
             <Text className="font-title text-lg leading-relaxed">
               Digite seu e-mail
             </Text>
