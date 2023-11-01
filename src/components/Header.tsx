@@ -1,19 +1,23 @@
-import { TextInput, TouchableOpacity, View } from 'react-native'
+import { Image, TextInput, TouchableOpacity, View } from 'react-native'
 import { useSafeAreaInsets } from 'react-native-safe-area-context'
 import Ionicons from '@expo/vector-icons/Ionicons'
 
-import LogoText from '../assets/img/logo-text.svg'
+import LogoYellow from '../assets/img/logo-red-yellow.png'
 
 export function Header() {
   const { top } = useSafeAreaInsets()
 
   return (
     <View
-      className="fixed left-0 top-0 w-full flex-col bg-zinc-50 px-4 pb-2 shadow-md"
+      className="fixed left-0 top-0 w-full flex-col bg-zinc-100 px-4 pb-2 shadow-md"
       style={{ paddingTop: top }}
     >
       <View className="flex-row items-center">
-        <LogoText />
+        <Image
+          source={LogoYellow}
+          alt="Receita que dói menos logo"
+          style={{ width: 70, height: 55 }}
+        />
 
         <View className="flex-1 flex-row justify-end gap-1">
           <TouchableOpacity activeOpacity={0.7}>

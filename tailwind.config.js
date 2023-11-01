@@ -9,9 +9,8 @@ module.exports = {
         mouse: 'MouseMemoirs_400Regular',
       },
       colors: {
-        primary: '#FFD900',
-        secondary: '#932743',
-        foreground: '#F3FF00',
+        primary: '#FAC801',
+        secondary: '#FE2A15',
         success: '#13B105',
         danger: '#DE0000',
         info: '#57BBD1',

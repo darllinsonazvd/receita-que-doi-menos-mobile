@@ -1,5 +1,7 @@
+import { useContext } from 'react'
 import { StatusBar } from 'expo-status-bar'
 import {
+  Image,
   ImageBackground,
   Text,
   TextInput,
@@ -7,16 +9,13 @@ import {
   View,
 } from 'react-native'
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view'
-import { styled } from 'nativewind'
 import { useSafeAreaInsets } from 'react-native-safe-area-context'
 
-import LogoTextAlt from '../assets/img/logo-text-alt.svg'
-import Welcome from '../assets/img/welcome.svg'
-import bg from '../assets/img/bg.jpg'
-import { useContext } from 'react'
 import { AuthContext } from '../auth/AuthenticationContext'
 
-const StyledLogo = styled(LogoTextAlt)
+import LogoWhite from '../assets/img/logo-white.png'
+import Welcome from '../assets/img/welcome.svg'
+import bg from '../assets/img/bg.jpg'
 
 export default function SignIn() {
   const { top } = useSafeAreaInsets()
@@ -43,10 +42,14 @@ export default function SignIn() {
             className="items-center justify-center"
             style={{ marginTop: top + 12 }}
           >
-            <StyledLogo />
+            <Image
+              source={LogoWhite}
+              alt="Receita Que Dói Menos Logo"
+              style={{ width: 122, height: 100 }}
+            />
           </View>
 
-          <View className="ml-4 mt-48 flex-1">
+          <View className="ml-4 mt-40 flex-1">
             <Welcome />
           </View>
 
