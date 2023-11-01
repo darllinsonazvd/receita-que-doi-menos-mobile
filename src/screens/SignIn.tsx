@@ -7,22 +7,26 @@ import {
   View,
 } from 'react-native'
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view'
-import { useRouter } from 'expo-router'
 import { styled } from 'nativewind'
-
-import LogoTextAlt from '../src/assets/img/logo-text-alt.svg'
-import bg from '../src/assets/img/bg.jpg'
-import Welcome from '../src/assets/img/welcome.svg'
 import { useSafeAreaInsets } from 'react-native-safe-area-context'
+
+import LogoTextAlt from '../assets/img/logo-text-alt.svg'
+import Welcome from '../assets/img/welcome.svg'
+import bg from '../assets/img/bg.jpg'
+import { useContext } from 'react'
+import { AuthContext } from '../auth/AuthenticationContext'
 
 const StyledLogo = styled(LogoTextAlt)
 
-export default function App() {
-  const router = useRouter()
+export default function SignIn() {
   const { top } = useSafeAreaInsets()
+  const { signIn } = useContext(AuthContext)
 
   function handleSignIn() {
-    router.push('/home')
+    signIn({
+      email: 'dummy@email.com',
+      password: 'test123',
+    })
   }
 
   return (
