@@ -17,7 +17,11 @@ import LogoWhite from '../assets/img/logo-white.png'
 import Welcome from '../assets/img/welcome.svg'
 import bg from '../assets/img/bg.jpg'
 
-export default function SignIn() {
+type SignInProps = {
+  navigation: any
+}
+
+export default function SignIn({ navigation }: SignInProps) {
   const { top } = useSafeAreaInsets()
   const { signIn } = useContext(AuthContext)
 
@@ -54,7 +58,7 @@ export default function SignIn() {
           </View>
 
           <View className="mt-3 flex-1 flex-col rounded-t-[38px] bg-zinc-100 px-8 py-6">
-            <Text className="font-title text-lg leading-relaxed">
+            <Text className="font-title text-lg leading-relaxed text-zinc-900">
               Digite seu e-mail
             </Text>
             <TextInput
@@ -68,7 +72,7 @@ export default function SignIn() {
               cursorColor="#131313"
             />
 
-            <Text className="mt-4 font-title text-lg leading-relaxed">
+            <Text className="mt-4 font-title text-lg leading-relaxed text-zinc-900">
               Digite sua senha
             </Text>
             <TextInput
@@ -88,7 +92,11 @@ export default function SignIn() {
               <Text className="font-title text-lg text-white">Entrar</Text>
             </TouchableOpacity>
 
-            <TouchableOpacity activeOpacity={0.7} className="mt-4 w-full">
+            <TouchableOpacity
+              activeOpacity={0.7}
+              className="mt-4 w-full"
+              onPress={() => navigation.navigate('Register')}
+            >
               <Text className="text-center font-body text-base text-zinc-900">
                 Ainda dói e você não Receita?
               </Text>

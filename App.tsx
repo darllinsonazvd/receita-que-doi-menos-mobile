@@ -12,9 +12,11 @@ import { SecureStoreKeys } from './src/utils/enums/secure-store-keys'
 
 import { Header } from './src/components/Header'
 
+import { AuthContext } from './src/auth/AuthenticationContext'
+
 import SignIn from './src/screens/SignIn'
 import Home from './src/screens/Home'
-import { AuthContext } from './src/auth/AuthenticationContext'
+import Register from './src/screens/Register'
 
 const Stack = createNativeStackNavigator()
 
@@ -94,6 +96,11 @@ export default function App() {
               <Stack.Screen
                 name="SignIn"
                 component={SignIn}
+                options={{ headerShown: false }}
+              />
+              <Stack.Screen
+                name="Register"
+                component={Register}
                 options={{ headerShown: false }}
               />
             </>
