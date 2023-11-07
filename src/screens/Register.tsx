@@ -122,7 +122,12 @@ export default function Register({ navigation }: RegisterProps) {
 
         <TouchableOpacity
           activeOpacity={0.7}
-          className="mt-4 w-full items-center justify-center rounded-full bg-success p-3"
+          className="mt-4 w-full items-center justify-center bg-success p-3"
+          style={{
+            borderRadius: 20,
+            borderTopRightRadius: 40,
+            borderBottomLeftRadius: 40,
+          }}
           onPress={() => handleRegister()}
         >
           <Text className="font-title text-lg text-white">Criar conta</Text>

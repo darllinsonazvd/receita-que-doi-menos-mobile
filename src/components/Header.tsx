@@ -1,6 +1,7 @@
-import { Image, TextInput, TouchableOpacity, View } from 'react-native'
+import { Image, TextInput, TouchableOpacity, View, Text } from 'react-native'
 import { useSafeAreaInsets } from 'react-native-safe-area-context'
 import Ionicons from '@expo/vector-icons/Ionicons'
+import Popover from 'react-native-popover-view'
 
 import LogoYellow from '../assets/img/logo-red-yellow.png'
 
@@ -20,9 +21,25 @@ export function Header() {
         />
 
         <View className="flex-1 flex-row justify-end gap-1">
-          <TouchableOpacity activeOpacity={0.7}>
-            <Ionicons name="add-outline" size={30} color="#191919" />
-          </TouchableOpacity>
+          <Popover
+            from={
+              <TouchableOpacity activeOpacity={0.7}>
+                <Ionicons name="add-outline" size={30} color="#191919" />
+              </TouchableOpacity>
+            }
+            popoverStyle={{
+              borderRadius: 16,
+              padding: 16,
+            }}
+          >
+            <TouchableOpacity
+              activeOpacity={0.7}
+              className="flex-row items-center justify-center gap-1"
+            >
+              <Ionicons name="add-circle-outline" size={24} color="#191919" />
+              <Text className="font-body text-base">Publicar receita</Text>
+            </TouchableOpacity>
+          </Popover>
           <TouchableOpacity activeOpacity={0.7}>
             <Ionicons name="person-circle-outline" size={30} color="#191919" />
           </TouchableOpacity>
