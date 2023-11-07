@@ -15,9 +15,6 @@ module.exports = {
         danger: '#DE0000',
         info: '#57BBD1',
       },
-      backgroundImage: {
-        woman: "url('./src/assets/img/bg.jpg')",
-      },
     },
   },
   plugins: [],
