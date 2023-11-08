@@ -17,6 +17,7 @@ import { AuthContext } from './src/auth/AuthenticationContext'
 import SignIn from './src/screens/SignIn'
 import Home from './src/screens/Home'
 import Register from './src/screens/Register'
+import RecipeDetails from './src/screens/RecipeDetails'
 
 const Stack = createNativeStackNavigator()
 
@@ -110,6 +111,11 @@ export default function App() {
                 name="Home"
                 component={Home}
                 options={{ header: () => <Header /> }}
+              />
+              <Stack.Screen
+                name="RecipeDetails"
+                component={RecipeDetails}
+                options={{ headerShown: false }}
               />
             </>
           )}
