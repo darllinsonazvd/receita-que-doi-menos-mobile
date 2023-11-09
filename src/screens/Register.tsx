@@ -1,4 +1,4 @@
-import { useContext } from 'react'
+import { useContext, useState } from 'react'
 import { StatusBar } from 'expo-status-bar'
 import {
   SafeAreaView,
@@ -8,8 +8,9 @@ import {
   View,
   Image,
 } from 'react-native'
-import Ionicons from '@expo/vector-icons/Ionicons'
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view'
+import Ionicons from '@expo/vector-icons/Ionicons'
+import Spinner from 'react-native-loading-spinner-overlay'
 
 import { AuthContext } from '../auth/AuthenticationContext'
 
@@ -22,15 +23,33 @@ type RegisterProps = {
 export default function Register({ navigation }: RegisterProps) {
   const { signIn } = useContext(AuthContext)
 
+  const [isLoading, setIsLoading] = useState<boolean>(false)
+
   async function handleRegister() {
-    signIn({
-      email: 'dummy@email.com',
-      password: 'test123',
-    })
+    setIsLoading((prev) => !prev)
+
+    setTimeout(() => {
+      setIsLoading((prev) => !prev)
+
+      setTimeout(() => {
+        signIn({
+          email: 'dummy@email.com',
+          password: 'test123',
+        })
+      }, 500)
+    }, 2000)
   }
 
   return (
     <SafeAreaView className="flex-1 bg-zinc-50 px-4">
+      <Spinner
+        visible={isLoading}
+        textContent="Aguarde..."
+        textStyle={{ color: '#fff', fontFamily: 'Baloo2_400Regular' }}
+        animation="fade"
+        overlayColor="rgba(0, 0, 0, 0.5)"
+      />
+
       <StatusBar style="dark" backgroundColor="transparent" />
       <View className="relative mt-4 items-center justify-center">
         <TouchableOpacity

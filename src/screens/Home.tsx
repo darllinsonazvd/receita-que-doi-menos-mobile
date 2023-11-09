@@ -2,6 +2,7 @@ import { useEffect } from 'react'
 import { ScrollView, Text, TouchableOpacity, View } from 'react-native'
 import { StatusBar } from 'expo-status-bar'
 import Toast from 'react-native-toast-message'
+import Spinner from 'react-native-loading-spinner-overlay'
 
 import { RecipeCard } from '../components/RecipeCard'
 
@@ -25,6 +26,8 @@ export default function Home({ navigation }: HomeProps) {
   return (
     <View className="flex-1 bg-zinc-100">
       <StatusBar style="dark" />
+
+      <Spinner />
 
       <ScrollView className="flex-1 px-4">
         <View className="items-start justify-center py-6">

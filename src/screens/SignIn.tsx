@@ -1,4 +1,4 @@
-import { useContext } from 'react'
+import { useContext, useState } from 'react'
 import { StatusBar } from 'expo-status-bar'
 import {
   Image,
@@ -10,6 +10,7 @@ import {
 } from 'react-native'
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view'
 import { useSafeAreaInsets } from 'react-native-safe-area-context'
+import Spinner from 'react-native-loading-spinner-overlay'
 
 import { AuthContext } from '../auth/AuthenticationContext'
 
@@ -25,15 +26,34 @@ export default function SignIn({ navigation }: SignInProps) {
   const { top } = useSafeAreaInsets()
   const { signIn } = useContext(AuthContext)
 
+  const [isLoading, setIsLoading] = useState<boolean>(false)
+
+  /** Fake authentication */
   function handleSignIn() {
-    signIn({
-      email: 'dummy@email.com',
-      password: 'test123',
-    })
+    setIsLoading((prev) => !prev)
+
+    setTimeout(() => {
+      setIsLoading((prev) => !prev)
+
+      setTimeout(() => {
+        signIn({
+          email: 'dummy@email.com',
+          password: 'test123',
+        })
+      }, 500)
+    }, 2000)
   }
 
   return (
     <View className="flex-1">
+      <Spinner
+        visible={isLoading}
+        textContent="Aguarde..."
+        textStyle={{ color: '#fff', fontFamily: 'Baloo2_400Regular' }}
+        animation="fade"
+        overlayColor="rgba(0, 0, 0, 0.5)"
+      />
+
       <KeyboardAwareScrollView
         enableOnAndroid={true}
         extraHeight={16}
