@@ -19,7 +19,7 @@ type MyRecipesProps = {
   navigation: any
 }
 
-export function MyRecipes({ navigation }: MyRecipesProps) {
+export default function MyRecipes({ navigation }: MyRecipesProps) {
   const { top } = useSafeAreaInsets()
 
   return (

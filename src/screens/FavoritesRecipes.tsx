@@ -19,7 +19,9 @@ type FavoritesRecipesProps = {
   navigation: any
 }
 
-export function FavoritesRecipes({ navigation }: FavoritesRecipesProps) {
+export default function FavoritesRecipes({
+  navigation,
+}: FavoritesRecipesProps) {
   const { top } = useSafeAreaInsets()
 
   return (

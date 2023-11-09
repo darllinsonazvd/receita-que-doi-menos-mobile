@@ -1,10 +1,9 @@
-import { Image, TextInput, TouchableOpacity, View, Text } from 'react-native'
+import { Image, TextInput, TouchableOpacity, View } from 'react-native'
 import { useSafeAreaInsets } from 'react-native-safe-area-context'
+import { Link } from '@react-navigation/native'
 import Ionicons from '@expo/vector-icons/Ionicons'
-import Popover from 'react-native-popover-view'
 
 import LogoYellow from '../assets/img/logo-red-yellow.png'
-import { Link } from '@react-navigation/native'
 
 export function Header() {
   const { top } = useSafeAreaInsets()
@@ -22,25 +21,11 @@ export function Header() {
         />
 
         <View className="flex-1 flex-row justify-end gap-1">
-          <Popover
-            from={
-              <TouchableOpacity activeOpacity={0.7}>
-                <Ionicons name="add-outline" size={30} color="#191919" />
-              </TouchableOpacity>
-            }
-            popoverStyle={{
-              borderRadius: 16,
-              padding: 16,
-            }}
-          >
-            <TouchableOpacity
-              activeOpacity={0.7}
-              className="flex-row items-center justify-center gap-1"
-            >
-              <Ionicons name="add-circle-outline" size={24} color="#191919" />
-              <Text className="font-body text-base">Publicar receita</Text>
-            </TouchableOpacity>
-          </Popover>
+          <TouchableOpacity activeOpacity={0.7}>
+            <Link to={{ screen: 'PublishRecipe' }}>
+              <Ionicons name="add-outline" size={30} color="#191919" />
+            </Link>
+          </TouchableOpacity>
           <TouchableOpacity activeOpacity={0}>
             <Link to={{ screen: 'Profile' }}>
               <Ionicons

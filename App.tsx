@@ -8,6 +8,8 @@ import { MouseMemoirs_400Regular } from '@expo-google-fonts/mouse-memoirs'
 import { NavigationContainer } from '@react-navigation/native'
 import { createNativeStackNavigator } from '@react-navigation/native-stack'
 import * as SecureStore from 'expo-secure-store'
+import * as SplashScreen from 'expo-splash-screen'
+
 import { SecureStoreKeys } from './src/utils/enums/secure-store-keys'
 
 import { Header } from './src/components/Header'
@@ -19,8 +21,9 @@ import Home from './src/screens/Home'
 import Register from './src/screens/Register'
 import RecipeDetails from './src/screens/RecipeDetails'
 import Profile from './src/screens/Profile'
-import { MyRecipes } from './src/screens/MyRecipes'
-import { FavoritesRecipes } from './src/screens/FavoritesRecipes'
+import MyRecipes from './src/screens/MyRecipes'
+import FavoritesRecipes from './src/screens/FavoritesRecipes'
+import PublicRecipe from './src/screens/PublishRecipe'
 
 const Stack = createNativeStackNavigator()
 
@@ -30,6 +33,8 @@ export default function App() {
     Baloo2_700Bold,
     MouseMemoirs_400Regular,
   })
+
+  const [isReady, setIsReady] = React.useState<boolean>(false)
 
   const [state, dispatch] = React.useReducer(
     (prevState: any, action: any) => {
@@ -76,6 +81,19 @@ export default function App() {
     [],
   )
 
+  const launchApp = async () => {
+    try {
+      await SplashScreen.preventAutoHideAsync()
+      await new Promise((resolve) => setTimeout(resolve, 2000))
+    } catch (err) {
+      console.warn(err)
+    } finally {
+      console.log('Ready!')
+      setIsReady((prev) => !prev)
+      await SplashScreen.hideAsync()
+    }
+  }
+
   React.useEffect(() => {
     const bootstrapAsync = async () => {
       let userToken: string | null = null
@@ -85,9 +103,14 @@ export default function App() {
     }
 
     bootstrapAsync()
+    launchApp()
   }, [])
 
   if (!hasLoadedFonts && !hasErrorOnLoadFonts) {
+    return null
+  }
+
+  if (!isReady) {
     return null
   }
 
@@ -133,6 +156,11 @@ export default function App() {
               <Stack.Screen
                 name="FavoritesRecipes"
                 component={FavoritesRecipes}
+                options={{ headerShown: false }}
+              />
+              <Stack.Screen
+                name="PublishRecipe"
+                component={PublicRecipe}
                 options={{ headerShown: false }}
               />
             </>
