@@ -12,8 +12,6 @@ import * as SplashScreen from 'expo-splash-screen'
 
 import { SecureStoreKeys } from './src/utils/enums/secure-store-keys'
 
-import { Header } from './src/components/Header'
-
 import { AuthContext } from './src/auth/AuthenticationContext'
 
 import SignIn from './src/screens/SignIn'
@@ -26,6 +24,8 @@ import FavoritesRecipes from './src/screens/FavoritesRecipes'
 import PublicRecipe from './src/screens/PublishRecipe'
 
 const Stack = createNativeStackNavigator()
+
+SplashScreen.preventAutoHideAsync()
 
 export default function App() {
   const [hasLoadedFonts, hasErrorOnLoadFonts] = useFonts({
@@ -82,16 +82,10 @@ export default function App() {
   )
 
   const launchApp = async () => {
-    try {
-      await SplashScreen.preventAutoHideAsync()
-      await new Promise((resolve) => setTimeout(resolve, 2000))
-    } catch (err) {
-      console.warn(err)
-    } finally {
-      console.log('Ready!')
+    setTimeout(async () => {
       setIsReady((prev) => !prev)
       await SplashScreen.hideAsync()
-    }
+    }, 1500)
   }
 
   React.useEffect(() => {
@@ -136,7 +130,7 @@ export default function App() {
               <Stack.Screen
                 name="Home"
                 component={Home}
-                options={{ header: () => <Header /> }}
+                options={{ headerShown: false }}
               />
               <Stack.Screen
                 name="RecipeDetails"

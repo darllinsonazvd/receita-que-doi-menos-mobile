@@ -5,7 +5,23 @@ import Ionicons from '@expo/vector-icons/Ionicons'
 
 import LogoYellow from '../assets/img/logo-red-yellow.png'
 
-export function Header() {
+type HeaderProps = {
+  handleSearch: (searchTerm: string) => void
+  handleCancelSearch: () => void
+  isSearching: boolean
+  setIsSearching: (prev: any) => void
+  search: string
+  setSearch: (value: string) => void
+}
+
+export function Header({
+  handleSearch,
+  handleCancelSearch,
+  isSearching,
+  setIsSearching,
+  search,
+  setSearch,
+}: HeaderProps) {
   const { top } = useSafeAreaInsets()
 
   return (
@@ -45,7 +61,20 @@ export function Header() {
           placeholderTextColor="#191919"
           cursorColor="#191919"
           returnKeyType="search"
+          onChangeText={(newTerm) => setSearch(newTerm)}
+          defaultValue={search}
+          onSubmitEditing={() => {
+            if (search.trim()) {
+              handleSearch(search.trim())
+              setIsSearching(true)
+            }
+          }}
         />
+        {isSearching && (
+          <TouchableOpacity activeOpacity={0.7} onPress={handleCancelSearch}>
+            <Ionicons name="close-outline" size={22} color="#191919" />
+          </TouchableOpacity>
+        )}
       </View>
     </View>
   )
