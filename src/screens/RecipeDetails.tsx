@@ -41,7 +41,9 @@ export default function RecipeDetails({
     if (supported) {
       await Linking.openURL(URL)
     } else {
-      Alert.alert(`Don't know how to open this URL: ${URL}`)
+      Alert.alert(
+        `Não foi possível acessar a url: ${URL}, contate os administradores do Receita!`,
+      )
     }
   }, [URL])
 

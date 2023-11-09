@@ -6,9 +6,15 @@ type RecipeCardProps = {
   imgUrl: string
   name: string
   author: string
+  showFavoriteButton: boolean
 }
 
-export function RecipeCard({ imgUrl, name, author }: RecipeCardProps) {
+export function RecipeCard({
+  imgUrl,
+  name,
+  author,
+  showFavoriteButton,
+}: RecipeCardProps) {
   const [isFavorite, setIsFavorite] = useState<boolean>(false)
 
   function handleFavorite() {
@@ -36,17 +42,19 @@ export function RecipeCard({ imgUrl, name, author }: RecipeCardProps) {
         }}
       />
 
-      <TouchableOpacity
-        onPress={handleFavorite}
-        activeOpacity={0.8}
-        className="absolute right-6 top-5 h-10 w-10 items-center justify-center rounded-full bg-zinc-950/20"
-      >
-        <Ionicons
-          name={isFavorite ? 'heart' : 'heart-outline'}
-          size={20}
-          color={isFavorite ? '#FE2A15' : '#fff'}
-        />
-      </TouchableOpacity>
+      {showFavoriteButton && (
+        <TouchableOpacity
+          onPress={handleFavorite}
+          activeOpacity={0.8}
+          className="absolute right-6 top-5 h-10 w-10 items-center justify-center rounded-full bg-zinc-950/20"
+        >
+          <Ionicons
+            name={isFavorite ? 'heart' : 'heart-outline'}
+            size={20}
+            color={isFavorite ? '#FE2A15' : '#fff'}
+          />
+        </TouchableOpacity>
+      )}
 
       <View className="absolute bottom-5 left-6">
         <Text className="font-title text-2xl text-zinc-50 shadow-xl">

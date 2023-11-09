@@ -18,6 +18,9 @@ import SignIn from './src/screens/SignIn'
 import Home from './src/screens/Home'
 import Register from './src/screens/Register'
 import RecipeDetails from './src/screens/RecipeDetails'
+import Profile from './src/screens/Profile'
+import { MyRecipes } from './src/screens/MyRecipes'
+import { FavoritesRecipes } from './src/screens/FavoritesRecipes'
 
 const Stack = createNativeStackNavigator()
 
@@ -115,6 +118,21 @@ export default function App() {
               <Stack.Screen
                 name="RecipeDetails"
                 component={RecipeDetails}
+                options={{ headerShown: false }}
+              />
+              <Stack.Screen
+                name="Profile"
+                component={Profile}
+                options={{ headerShown: false }}
+              />
+              <Stack.Screen
+                name="MyRecipes"
+                component={MyRecipes}
+                options={{ headerShown: false }}
+              />
+              <Stack.Screen
+                name="FavoritesRecipes"
+                component={FavoritesRecipes}
                 options={{ headerShown: false }}
               />
             </>
