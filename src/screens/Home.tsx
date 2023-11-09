@@ -1,5 +1,7 @@
+import { useEffect } from 'react'
 import { ScrollView, Text, TouchableOpacity, View } from 'react-native'
 import { StatusBar } from 'expo-status-bar'
+import Toast from 'react-native-toast-message'
 
 import { RecipeCard } from '../components/RecipeCard'
 
@@ -10,6 +12,16 @@ type HomeProps = {
 }
 
 export default function Home({ navigation }: HomeProps) {
+  useEffect(() => {
+    Toast.show({
+      type: 'success',
+      text1: 'Bem-vindo, João da Silva',
+      text2: 'Sinta-se em casa e aproveite nossas delícias 😋',
+      visibilityTime: 3000,
+      position: 'bottom',
+    })
+  }, [])
+
   return (
     <View className="flex-1 bg-zinc-100">
       <StatusBar style="dark" />
@@ -41,6 +53,8 @@ export default function Home({ navigation }: HomeProps) {
           })}
         </View>
       </ScrollView>
+
+      <Toast />
     </View>
   )
 }
