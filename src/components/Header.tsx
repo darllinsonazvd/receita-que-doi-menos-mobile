@@ -1,10 +1,10 @@
+import { useState } from 'react'
 import { Image, TextInput, TouchableOpacity, View, Text } from 'react-native'
 import { useSafeAreaInsets } from 'react-native-safe-area-context'
 import Ionicons from '@expo/vector-icons/Ionicons'
 import Popover from 'react-native-popover-view'
 
 import LogoYellow from '../assets/img/logo-red-yellow.png'
-import { useState } from 'react'
 
 type HeaderProps = {
   navigation: any

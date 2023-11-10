@@ -8,7 +8,6 @@ import { MouseMemoirs_400Regular } from '@expo-google-fonts/mouse-memoirs'
 import { NavigationContainer } from '@react-navigation/native'
 import { createNativeStackNavigator } from '@react-navigation/native-stack'
 import * as SecureStore from 'expo-secure-store'
-import * as SplashScreen from 'expo-splash-screen'
 
 import { SecureStoreKeys } from './src/utils/enums/secure-store-keys'
 
@@ -22,10 +21,9 @@ import Profile from './src/screens/Profile'
 import MyRecipes from './src/screens/MyRecipes'
 import FavoritesRecipes from './src/screens/FavoritesRecipes'
 import PublicRecipe from './src/screens/PublishRecipe'
+import Splash from './src/screens/Splash'
 
 const Stack = createNativeStackNavigator()
-
-SplashScreen.preventAutoHideAsync()
 
 export default function App() {
   const [hasLoadedFonts, hasErrorOnLoadFonts] = useFonts({
@@ -81,13 +79,6 @@ export default function App() {
     [],
   )
 
-  const launchApp = async () => {
-    setTimeout(async () => {
-      setIsReady((prev) => !prev)
-      await SplashScreen.hideAsync()
-    }, 1500)
-  }
-
   React.useEffect(() => {
     const bootstrapAsync = async () => {
       let userToken: string | null = null
@@ -96,19 +87,18 @@ export default function App() {
       dispatch({ type: 'RESTORE_TOKEN', token: userToken })
     }
 
+    setTimeout(async () => {
+      setIsReady(true)
+    }, 3000)
+
     bootstrapAsync()
-    launchApp()
   }, [])
 
   if (!hasLoadedFonts && !hasErrorOnLoadFonts) {
     return null
   }
 
-  if (!isReady) {
-    return null
-  }
-
-  return (
+  return isReady ? (
     <AuthContext.Provider value={authContext}>
       <NavigationContainer>
         <Stack.Navigator>
@@ -162,5 +152,7 @@ export default function App() {
         </Stack.Navigator>
       </NavigationContainer>
     </AuthContext.Provider>
+  ) : (
+    <Splash />
   )
 }
