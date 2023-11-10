@@ -1,5 +1,11 @@
 import { useEffect, useState } from 'react'
-import { ScrollView, Text, TouchableOpacity, View } from 'react-native'
+import {
+  ImageBackground,
+  ScrollView,
+  Text,
+  TouchableOpacity,
+  View,
+} from 'react-native'
 import { StatusBar } from 'expo-status-bar'
 import Toast from 'react-native-toast-message'
 import Spinner from 'react-native-loading-spinner-overlay'
@@ -10,6 +16,8 @@ import { RecipeCard } from '../components/RecipeCard'
 import { recipes as mockRecipes } from '../utils/mocks/recipes'
 import { Recipe } from '../utils/types/recipe'
 import { clearString } from '../utils/functions/clear-string'
+
+import Background from '../assets/img/bg-register.png'
 
 type HomeProps = {
   navigation: any
@@ -75,6 +83,7 @@ export default function Home({ navigation }: HomeProps) {
       />
 
       <Header
+        navigation={navigation}
         search={search}
         setSearch={setSearch}
         isSearching={isSearching}
@@ -83,38 +92,46 @@ export default function Home({ navigation }: HomeProps) {
         handleCancelSearch={handleCancelSearch}
       />
 
-      <ScrollView className="flex-1 px-4">
-        <View className="items-start justify-center py-6">
-          {isSearching ? (
-            <Text className="mb-6 font-title text-xl text-zinc-900">
-              Estes são os resultados para: {search}
-            </Text>
-          ) : (
-            <Text className="mb-6 font-mouse text-4xl text-zinc-900">
-              Mais populares
-            </Text>
-          )}
+      <ScrollView className="flex-1 bg-zinc-50">
+        <ImageBackground
+          className="px-4"
+          source={Background}
+          resizeMode="cover"
+        >
+          <View className="items-start justify-center py-6">
+            {isSearching ? (
+              <Text className="mb-6 font-title text-xl text-zinc-900">
+                Estes são os resultados para: {search}
+              </Text>
+            ) : (
+              <Text className="mb-6 font-mouse text-4xl text-zinc-900">
+                Mais populares
+              </Text>
+            )}
 
-          {recipes.map((recipe) => {
-            return (
-              <TouchableOpacity
-                className="w-full"
-                activeOpacity={0.9}
-                key={recipe.id}
-                onPress={() =>
-                  navigation.navigate('RecipeDetails', { recipeId: recipe.id })
-                }
-              >
-                <RecipeCard
-                  imgUrl={recipe.imgUrl}
-                  name={recipe.name}
-                  author={recipe.author}
-                  showFavoriteButton={true}
-                />
-              </TouchableOpacity>
-            )
-          })}
-        </View>
+            {recipes.map((recipe) => {
+              return (
+                <TouchableOpacity
+                  className="w-full"
+                  activeOpacity={0.9}
+                  key={recipe.id}
+                  onPress={() =>
+                    navigation.navigate('RecipeDetails', {
+                      recipeId: recipe.id,
+                    })
+                  }
+                >
+                  <RecipeCard
+                    imgUrl={recipe.imgUrl}
+                    name={recipe.name}
+                    author={recipe.author}
+                    showFavoriteButton={true}
+                  />
+                </TouchableOpacity>
+              )
+            })}
+          </View>
+        </ImageBackground>
       </ScrollView>
 
       <Toast />

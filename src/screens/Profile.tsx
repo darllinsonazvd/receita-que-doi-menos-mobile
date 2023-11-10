@@ -100,7 +100,7 @@ export default function Profile({ navigation }: ProfileProps) {
 
         <TouchableOpacity
           activeOpacity={0.7}
-          className="mt-4 w-full flex-row items-center justify-center bg-secondary p-3"
+          className="mt-4 w-full flex-row items-center justify-center bg-danger p-3"
           style={{
             borderRadius: 20,
             borderTopRightRadius: 40,

@@ -13,7 +13,7 @@ import { recipes } from '../utils/mocks/recipes'
 
 import { RecipeCard } from '../components/RecipeCard'
 
-import BgRecipe from '../assets/img/bg-recipe.png'
+import Background from '../assets/img/bg-register.png'
 
 type FavoritesRecipesProps = {
   navigation: any
@@ -40,7 +40,7 @@ export default function FavoritesRecipes({
       </View>
 
       <ScrollView className="flex-1">
-        <ImageBackground source={BgRecipe} className="flex-1 bg-zinc-200 p-4">
+        <ImageBackground source={Background} className="flex-1 bg-zinc-200 p-4">
           <View className="mb-4 w-full flex-row">
             <View className="mr-2 h-10 w-10 items-center justify-center rounded-full border border-zinc-300">
               <Text className="text-xl">👨‍🍳</Text>

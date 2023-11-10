@@ -27,6 +27,14 @@
     },
     "web": {
       "favicon": "./assets/favicon.png"
-    }
+    },
+    "plugins": [
+      [
+        "expo-image-picker",
+        {
+          "photosPermission": "o app deseja acessar suas fotos para você publicar uma imagem da sua receita."
+        }
+      ]
+    ]
   }
 }

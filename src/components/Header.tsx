@@ -1,11 +1,13 @@
-import { Image, TextInput, TouchableOpacity, View } from 'react-native'
+import { Image, TextInput, TouchableOpacity, View, Text } from 'react-native'
 import { useSafeAreaInsets } from 'react-native-safe-area-context'
-import { Link } from '@react-navigation/native'
 import Ionicons from '@expo/vector-icons/Ionicons'
+import Popover from 'react-native-popover-view'
 
 import LogoYellow from '../assets/img/logo-red-yellow.png'
+import { useState } from 'react'
 
 type HeaderProps = {
+  navigation: any
   handleSearch: (searchTerm: string) => void
   handleCancelSearch: () => void
   isSearching: boolean
@@ -15,6 +17,7 @@ type HeaderProps = {
 }
 
 export function Header({
+  navigation,
   handleSearch,
   handleCancelSearch,
   isSearching,
@@ -24,9 +27,11 @@ export function Header({
 }: HeaderProps) {
   const { top } = useSafeAreaInsets()
 
+  const [showPopover, setShowPopover] = useState<boolean>(false)
+
   return (
     <View
-      className="fixed left-0 top-0 w-full flex-col bg-zinc-100 px-4 pb-2 shadow-md"
+      className="fixed left-0 top-0 w-full flex-col bg-zinc-50 px-4 pb-2 shadow-md"
       style={{ paddingTop: top }}
     >
       <View className="flex-row items-center">
@@ -36,20 +41,40 @@ export function Header({
           style={{ width: 70, height: 55 }}
         />
 
-        <View className="flex-1 flex-row justify-end gap-1">
-          <TouchableOpacity activeOpacity={0.7}>
-            <Link to={{ screen: 'PublishRecipe' }}>
-              <Ionicons name="add-outline" size={30} color="#191919" />
-            </Link>
-          </TouchableOpacity>
-          <TouchableOpacity activeOpacity={0}>
-            <Link to={{ screen: 'Profile' }}>
-              <Ionicons
-                name="person-circle-outline"
-                size={30}
-                color="#191919"
-              />
-            </Link>
+        <View className="flex-1 flex-row items-center justify-end gap-1">
+          <Popover
+            isVisible={showPopover}
+            onRequestClose={() => setShowPopover(false)}
+            from={
+              <TouchableOpacity
+                activeOpacity={0.7}
+                onPress={() => setShowPopover(true)}
+              >
+                <Ionicons name="add-outline" size={30} color="#191919" />
+              </TouchableOpacity>
+            }
+            popoverStyle={{
+              borderRadius: 16,
+              padding: 16,
+            }}
+          >
+            <TouchableOpacity
+              activeOpacity={0.7}
+              className="flex-row items-center justify-center gap-1"
+              onPress={() => {
+                setShowPopover(false)
+                navigation.navigate('PublishRecipe')
+              }}
+            >
+              <Ionicons name="add-circle-outline" size={24} color="#191919" />
+              <Text className="font-body text-base">Publicar receita</Text>
+            </TouchableOpacity>
+          </Popover>
+          <TouchableOpacity
+            activeOpacity={0.7}
+            onPress={() => navigation.navigate('Profile')}
+          >
+            <Ionicons name="person-circle-outline" size={30} color="#191919" />
           </TouchableOpacity>
         </View>
       </View>
