@@ -60,7 +60,7 @@ export default function PublicRecipe({ navigation }: PublicRecipeProps) {
   function showToast() {
     Toast.show({
       type: 'success',
-      text1: 'Sua receita publicada com sucesso! 😍',
+      text1: 'Sua receita foi publicada com sucesso! 😍',
       visibilityTime: 3000,
       position: 'bottom',
     })
