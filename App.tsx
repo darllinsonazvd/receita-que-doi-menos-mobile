@@ -89,7 +89,7 @@ export default function App() {
 
     setTimeout(async () => {
       setIsReady(true)
-    }, 3000)
+    }, 6000)
 
     bootstrapAsync()
   }, [])
