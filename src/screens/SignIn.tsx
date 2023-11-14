@@ -10,9 +10,16 @@ import {
 } from 'react-native'
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view'
 import { useSafeAreaInsets } from 'react-native-safe-area-context'
+import { useForm, Controller } from 'react-hook-form'
+import { z } from 'zod'
+import { zodResolver } from '@hookform/resolvers/zod'
 import Spinner from 'react-native-loading-spinner-overlay'
+import * as SecureStore from 'expo-secure-store'
+import Toast from 'react-native-toast-message'
 
+import { SecureStoreKeys } from '../utils/enums/secure-store-keys'
 import { AuthContext } from '../auth/AuthenticationContext'
+import { api } from '../lib/api'
 
 import LogoWhite from '../assets/img/logo-white.png'
 import Welcome from '../assets/img/welcome.svg'
@@ -24,24 +31,72 @@ type SignInProps = {
 
 export default function SignIn({ navigation }: SignInProps) {
   const { top } = useSafeAreaInsets()
+
+  const authSchema = z.object({
+    email: z.string().min(1, 'E-mail é obrigatório').email('E-mail inválido'),
+    password: z
+      .string()
+      .min(1, 'Senha é obrigatória')
+      .min(8, 'A senha deve conter no mínimo 8 caracteres')
+      .max(12, 'A senha não pode ter mais de 12 caracteres'),
+  })
+  type Auth = z.infer<typeof authSchema>
+
+  const {
+    control,
+    handleSubmit,
+    formState: { errors },
+  } = useForm<Auth>({
+    resolver: zodResolver(authSchema),
+    defaultValues: {
+      email: '',
+      password: '',
+    },
+  })
+
   const { signIn } = useContext(AuthContext)
 
   const [isLoading, setIsLoading] = useState<boolean>(false)
 
-  /** Fake authentication */
-  function handleSignIn() {
-    setIsLoading((prev) => !prev)
+  /**
+   * Fazer login do usuário
+   *
+   * @author Darllinson Azevedo
+   *
+   * @param data Payload com os dados do formulário
+   */
+  function handleSignIn(data: Auth) {
+    setIsLoading(true)
 
-    setTimeout(() => {
-      setIsLoading((prev) => !prev)
+    api
+      .post('/auth/login', data)
+      .then(async (response) => {
+        await SecureStore.setItemAsync(
+          SecureStoreKeys.TOKEN,
+          response.data.access_token,
+        )
+        await SecureStore.setItemAsync(
+          SecureStoreKeys.REFRESH_TOKEN,
+          response.data.refresh_token,
+        )
 
-      setTimeout(() => {
-        signIn({
-          email: 'dummy@email.com',
-          password: 'test123',
+        setIsLoading(false)
+
+        setTimeout(() => {
+          signIn(response.data.access_token)
+        }, 500)
+      })
+      .catch(() => {
+        setIsLoading(false)
+
+        Toast.show({
+          type: 'error',
+          text1: 'Ooops...',
+          text2: 'Usuário ou senha incorretas.',
+          visibilityTime: 3000,
+          position: 'bottom',
         })
-      }, 500)
-    }, 2000)
+      })
   }
 
   return (
@@ -81,28 +136,56 @@ export default function SignIn({ navigation }: SignInProps) {
             <Text className="font-title text-lg leading-relaxed text-zinc-900">
               Digite seu e-mail
             </Text>
-            <TextInput
-              className="mt-1 w-full rounded-full border border-zinc-900 px-4 py-3 font-body text-base text-zinc-900"
-              placeholder="seumail@exemplo.com"
-              placeholderTextColor="#131313"
-              returnKeyType="next"
-              keyboardAppearance="default"
-              autoComplete="email"
-              enterKeyHint="next"
-              cursorColor="#131313"
+            <Controller
+              control={control}
+              name="email"
+              render={({ field }) => (
+                <TextInput
+                  className="mt-1 w-full rounded-full border border-zinc-900 px-4 py-3 font-body text-base text-zinc-900"
+                  placeholder="seumail@exemplo.com"
+                  placeholderTextColor="#131313"
+                  returnKeyType="next"
+                  keyboardAppearance="default"
+                  autoComplete="email"
+                  enterKeyHint="next"
+                  cursorColor="#131313"
+                  onChangeText={field.onChange}
+                  onBlur={field.onBlur}
+                  value={field.value}
+                />
+              )}
             />
+            {errors.email && (
+              <Text className="mt-2 font-body text-sm text-danger">
+                {errors.email.message}
+              </Text>
+            )}
 
             <Text className="mt-4 font-title text-lg leading-relaxed text-zinc-900">
               Digite sua senha
             </Text>
-            <TextInput
-              className="mt-1 w-full rounded-full border border-zinc-900 px-4 py-3 font-body text-base text-zinc-900"
-              placeholder="com pelo menos 6 caracteres"
-              placeholderTextColor="#131313"
-              keyboardAppearance="default"
-              secureTextEntry
-              cursorColor="#131313"
+            <Controller
+              control={control}
+              name="password"
+              render={({ field }) => (
+                <TextInput
+                  className="mt-1 w-full rounded-full border border-zinc-900 px-4 py-3 font-body text-base text-zinc-900"
+                  placeholder="com pelo menos 6 caracteres"
+                  placeholderTextColor="#131313"
+                  keyboardAppearance="default"
+                  secureTextEntry
+                  cursorColor="#131313"
+                  onChangeText={field.onChange}
+                  onBlur={field.onBlur}
+                  value={field.value}
+                />
+              )}
             />
+            {errors.password && (
+              <Text className="mt-2 font-body text-sm text-danger">
+                {errors.password.message}
+              </Text>
+            )}
 
             <TouchableOpacity
               activeOpacity={0.7}
@@ -112,7 +195,7 @@ export default function SignIn({ navigation }: SignInProps) {
                 borderTopRightRadius: 40,
                 borderBottomLeftRadius: 40,
               }}
-              onPress={() => handleSignIn()}
+              onPress={handleSubmit(handleSignIn)}
             >
               <Text className="font-title text-lg text-white">Entrar</Text>
             </TouchableOpacity>
@@ -132,6 +215,8 @@ export default function SignIn({ navigation }: SignInProps) {
           </View>
         </ImageBackground>
       </KeyboardAwareScrollView>
+
+      <Toast />
     </View>
   )
 }

@@ -9,15 +9,18 @@ import {
 import { StatusBar } from 'expo-status-bar'
 import Toast from 'react-native-toast-message'
 import Spinner from 'react-native-loading-spinner-overlay'
+import * as SecureStore from 'expo-secure-store'
 
 import { Header } from '../components/Header'
 import { RecipeCard } from '../components/RecipeCard'
 
+import { SecureStoreKeys } from '../utils/enums/secure-store-keys'
 import { recipes as mockRecipes } from '../utils/mocks/recipes'
 import { Recipe } from '../utils/types/recipe'
 import { clearString } from '../utils/functions/clear-string'
 
 import Background from '../assets/img/bg-register.png'
+import { jwtDecode } from '../utils/functions/jwt-decode'
 
 type HomeProps = {
   navigation: any
@@ -59,12 +62,16 @@ export default function Home({ navigation }: HomeProps) {
   }
 
   useEffect(() => {
-    Toast.show({
-      type: 'success',
-      text1: 'Bem-vindo, João da Silva',
-      text2: 'Sinta-se em casa e aproveite nossas delícias 😋',
-      visibilityTime: 3000,
-      position: 'bottom',
+    SecureStore.getItemAsync(SecureStoreKeys.TOKEN).then((token) => {
+      const decodedToken = jwtDecode(token || '')
+
+      Toast.show({
+        type: 'success',
+        text1: `Bem-vindo, ${decodedToken.user_name}`,
+        text2: 'Sinta-se em casa e aproveite nossas delícias 😋',
+        visibilityTime: 3000,
+        position: 'bottom',
+      })
     })
 
     setRecipes(mockRecipes)

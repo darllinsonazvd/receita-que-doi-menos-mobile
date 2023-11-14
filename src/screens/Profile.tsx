@@ -9,10 +9,12 @@ import {
   View,
 } from 'react-native'
 import Ionicons from '@expo/vector-icons/Ionicons'
+import * as SecureStore from 'expo-secure-store'
 
 import { AuthContext } from '../auth/AuthenticationContext'
 
 import BgRecipe from '../assets/img/bg-recipe.png'
+import { SecureStoreKeys } from '../utils/enums/secure-store-keys'
 
 type ProfileProps = {
   navigation: any
@@ -23,7 +25,15 @@ export default function Profile({ navigation }: ProfileProps) {
 
   const { signOut } = useContext(AuthContext)
 
-  function handleSignOut() {
+  /**
+   * Desconectar usuário da aplicação
+   *
+   * @author Darllinson Azevedo
+   */
+  async function handleSignOut() {
+    await SecureStore.deleteItemAsync(SecureStoreKeys.TOKEN)
+    await SecureStore.deleteItemAsync(SecureStoreKeys.REFRESH_TOKEN)
+
     signOut()
   }
 

@@ -66,15 +66,10 @@ export default function App() {
 
   const authContext = React.useMemo(
     () => ({
-      signIn: async (data: { email: string; password: string }) => {
-        console.log(data)
-        dispatch({ type: 'SIGN_IN', token: 'dummy-auth-token' })
+      signIn: async (token: string) => {
+        dispatch({ type: 'SIGN_IN', token })
       },
       signOut: () => dispatch({ type: 'SIGN_OUT' }),
-      signUp: async (data: { email: string; password: string }) => {
-        console.log(data)
-        dispatch({ type: 'SIGN_IN', token: 'dummy-auth-token' })
-      },
     }),
     [],
   )
