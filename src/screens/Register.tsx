@@ -19,7 +19,7 @@ import * as SecureStore from 'expo-secure-store'
 
 import { SecureStoreKeys } from '../utils/enums/secure-store-keys'
 import { AuthContext } from '../auth/AuthenticationContext'
-import { api } from '../lib/api'
+import { publicApi } from '../lib/api'
 
 import LogoMixed from '../assets/img/logo-red-yellow.png'
 
@@ -33,7 +33,7 @@ export default function Register({ navigation }: RegisterProps) {
   const registerSchema = z.object({
     name: z
       .string()
-      .min(1, 'Digite seu nome')
+      .min(1, 'O seu nome é obrigatório')
       .min(3, 'Seu nome deve ter no mínimo 3 caracteres'),
     email: z.string().min(1, 'E-mail é obrigatório').email('E-mail inválido'),
     password: z
@@ -67,14 +67,12 @@ export default function Register({ navigation }: RegisterProps) {
    * @param data Payload com os dados do formulário
    */
   function handleRegister(data: Register) {
-    console.log(data)
-
     setIsLoading(true)
 
-    api
+    publicApi
       .post('/auth/register', data)
       .then(() => {
-        api
+        publicApi
           .post('/auth/login', { email: data.email, password: data.password })
           .then(async (response) => {
             await SecureStore.setItemAsync(
@@ -218,7 +216,7 @@ export default function Register({ navigation }: RegisterProps) {
             render={({ field }) => (
               <TextInput
                 className="mt-1 w-full rounded-full border border-zinc-900 px-4 py-3 font-body text-base text-zinc-900"
-                placeholder="com pelo menos 6 caracteres"
+                placeholder="com pelo menos 8 caracteres"
                 placeholderTextColor="#131313"
                 keyboardAppearance="default"
                 secureTextEntry

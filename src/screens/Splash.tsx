@@ -25,6 +25,7 @@ export default function Splash() {
         source={require('../assets/lottie/recipe-book.json')}
         autoPlay
         loop={false}
+        useNativeLooping={false}
         resizeMode="contain"
         onAnimationFinish={() => {
           setAnimationFinished(true)

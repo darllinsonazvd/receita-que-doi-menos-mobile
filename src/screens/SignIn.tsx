@@ -19,7 +19,7 @@ import Toast from 'react-native-toast-message'
 
 import { SecureStoreKeys } from '../utils/enums/secure-store-keys'
 import { AuthContext } from '../auth/AuthenticationContext'
-import { api } from '../lib/api'
+import { publicApi } from '../lib/api'
 
 import LogoWhite from '../assets/img/logo-white.png'
 import Welcome from '../assets/img/welcome.svg'
@@ -68,7 +68,7 @@ export default function SignIn({ navigation }: SignInProps) {
   function handleSignIn(data: Auth) {
     setIsLoading(true)
 
-    api
+    publicApi
       .post('/auth/login', data)
       .then(async (response) => {
         await SecureStore.setItemAsync(
@@ -170,7 +170,7 @@ export default function SignIn({ navigation }: SignInProps) {
               render={({ field }) => (
                 <TextInput
                   className="mt-1 w-full rounded-full border border-zinc-900 px-4 py-3 font-body text-base text-zinc-900"
-                  placeholder="com pelo menos 6 caracteres"
+                  placeholder="com pelo menos 8 caracteres"
                   placeholderTextColor="#131313"
                   keyboardAppearance="default"
                   secureTextEntry

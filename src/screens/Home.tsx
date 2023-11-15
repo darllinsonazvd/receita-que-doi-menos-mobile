@@ -101,11 +101,11 @@ export default function Home({ navigation }: HomeProps) {
 
       <ScrollView className="flex-1 bg-zinc-50">
         <ImageBackground
-          className="px-4"
+          className="flex-1 px-4"
           source={Background}
           resizeMode="cover"
         >
-          <View className="items-start justify-center py-6">
+          <View className="flex-1 items-start justify-center py-6">
             {isSearching ? (
               <Text className="mb-6 font-title text-xl text-zinc-900">
                 Estes são os resultados para: {search}

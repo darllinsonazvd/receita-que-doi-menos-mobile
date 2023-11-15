@@ -1,4 +1,4 @@
-import { useContext } from 'react'
+import { useContext, useEffect, useState } from 'react'
 import { StatusBar } from 'expo-status-bar'
 import { useSafeAreaInsets } from 'react-native-safe-area-context'
 import {
@@ -15,6 +15,8 @@ import { AuthContext } from '../auth/AuthenticationContext'
 
 import BgRecipe from '../assets/img/bg-recipe.png'
 import { SecureStoreKeys } from '../utils/enums/secure-store-keys'
+import { JwtDecode } from '../utils/types/jwt'
+import { jwtDecode } from '../utils/functions/jwt-decode'
 
 type ProfileProps = {
   navigation: any
@@ -24,6 +26,8 @@ export default function Profile({ navigation }: ProfileProps) {
   const { top } = useSafeAreaInsets()
 
   const { signOut } = useContext(AuthContext)
+
+  const [userInfo, setUserInfo] = useState<JwtDecode | null>(null)
 
   /**
    * Desconectar usuário da aplicação
@@ -42,6 +46,14 @@ export default function Profile({ navigation }: ProfileProps) {
       'Nosso time está trabalhando com carinho nessa funcionalidade 😁. Aguarde as próximas atualizações!',
     )
   }
+
+  useEffect(() => {
+    /** Recuperando informações do usuário autenticado */
+    SecureStore.getItemAsync(SecureStoreKeys.TOKEN).then((token) => {
+      const decodedToken = jwtDecode(token || '')
+      setUserInfo(decodedToken)
+    })
+  }, [])
 
   return (
     <View className="flex-1 bg-zinc-100" style={{ paddingTop: top }}>
@@ -75,8 +87,8 @@ export default function Profile({ navigation }: ProfileProps) {
           </View>
 
           <View className="mt-3 flex-col items-center justify-center">
-            <Text className="font-title text-2xl">João da Silva</Text>
-            <Text className="-mt-2 font-body text-base">joao@exemplo.com</Text>
+            <Text className="font-title text-2xl">{userInfo?.user_name}</Text>
+            <Text className="-mt-2 font-body text-base">{userInfo?.sub}</Text>
           </View>
         </View>
 
