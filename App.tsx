@@ -24,7 +24,6 @@ import PublicRecipe from './src/screens/PublishRecipe'
 import Splash from './src/screens/Splash'
 import { jwtDecode } from './src/utils/functions/jwt-decode'
 import { verifyTokenExpirationTime } from './src/utils/functions/jwt-verify'
-import { privateApi } from './src/lib/api'
 
 const Stack = createNativeStackNavigator()
 
@@ -79,10 +78,7 @@ export default function App() {
 
   React.useEffect(() => {
     const bootstrapAsync = async () => {
-      let userToken = await SecureStore.getItemAsync(SecureStoreKeys.TOKEN)
-      const refreshToken = await SecureStore.getItemAsync(
-        SecureStoreKeys.REFRESH_TOKEN,
-      )
+      const userToken = await SecureStore.getItemAsync(SecureStoreKeys.TOKEN)
 
       if (userToken) {
         const decodedToken = jwtDecode(userToken || '')
@@ -90,19 +86,8 @@ export default function App() {
 
         /** Verificando se o token vai expirar em 5 minutos (300 seg.) */
         if (tokenExpirationTime <= 300) {
-          privateApi
-            .post(
-              '/auth/refresh',
-              { refresh_token: refreshToken },
-              { headers: { Authorization: 'Bearer ' + userToken } },
-            )
-            .then(async (response) => {
-              await SecureStore.setItemAsync(
-                SecureStoreKeys.TOKEN,
-                response.data['access-token'],
-              )
-              userToken = response.data['access-token']
-            })
+          await SecureStore.deleteItemAsync(SecureStoreKeys.TOKEN)
+          await SecureStore.deleteItemAsync(SecureStoreKeys.REFRESH_TOKEN)
         }
       }
 
