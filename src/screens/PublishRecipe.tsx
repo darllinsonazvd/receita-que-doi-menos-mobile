@@ -1,5 +1,5 @@
-/* eslint-disable prefer-const */
-import { useCallback, useState } from 'react'
+/* eslint-disable no-useless-return */
+import { useCallback, useEffect, useState } from 'react'
 import {
   Alert,
   ImageBackground,
@@ -12,11 +12,21 @@ import {
 } from 'react-native'
 import { useSafeAreaInsets } from 'react-native-safe-area-context'
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view'
+import { z } from 'zod'
+import { Controller, useForm } from 'react-hook-form'
+import { zodResolver } from '@hookform/resolvers/zod'
 import Ionicons from '@expo/vector-icons/Ionicons'
 import Spinner from 'react-native-loading-spinner-overlay'
 import Toast from 'react-native-toast-message'
+import * as SecureStore from 'expo-secure-store'
+
+import { RegisterRecipe } from '../utils/types/register-recipe'
+import { JwtDecode } from '../utils/types/jwt'
 
 import Background from '../assets/img/bg-register.png'
+import { SecureStoreKeys } from '../utils/enums/secure-store-keys'
+import { jwtDecode } from '../utils/functions/jwt-decode'
+import { privateApi } from '../lib/api'
 
 type PublicRecipeProps = {
   navigation: any
@@ -25,10 +35,41 @@ type PublicRecipeProps = {
 export default function PublicRecipe({ navigation }: PublicRecipeProps) {
   const { top } = useSafeAreaInsets()
 
-  const [preview, setPreview] = useState<string>('')
   const [ingredients, setIngredients] = useState<string[]>([])
+  const [userInfo, setUserInfo] = useState<JwtDecode | null>(null)
 
-  const [isLoading, setIsLoading] = useState<boolean>()
+  const [isLoading, setIsLoading] = useState<boolean>(false)
+
+  const registerRecipeSchema = z.object({
+    name: z
+      .string()
+      .min(1, 'O nome da receita é obrigatório')
+      .min(3, 'O nome da receita deve ter no mínimo 3 caracteres'),
+    photoURL: z
+      .string()
+      .min(1, 'A URL da foto é obrigatória')
+      .url('URL inválida'),
+    videoURL: z.string(),
+    instructions: z
+      .string()
+      .min(20, 'As instruções devem possuir pelo menos 20 caracteres'),
+  })
+  type RegisterRecipeForm = z.infer<typeof registerRecipeSchema>
+
+  const {
+    control,
+    handleSubmit,
+    formState: { errors },
+    reset,
+  } = useForm<RegisterRecipeForm>({
+    resolver: zodResolver(registerRecipeSchema),
+    defaultValues: {
+      name: '',
+      instructions: '',
+      photoURL: '',
+      videoURL: '',
+    },
+  })
 
   const handleOpenImgBb = useCallback(async () => {
     const URL = 'https://imgbb.com'
@@ -44,14 +85,14 @@ export default function PublicRecipe({ navigation }: PublicRecipeProps) {
   }, [])
 
   function updateIngredient(index: number, value: string) {
-    let ingredientsList = [...ingredients]
+    const ingredientsList = [...ingredients]
     ingredientsList[index] = value
 
     setIngredients(ingredientsList)
   }
 
   function deleteIngredient(index: number) {
-    let ingredientsList = [...ingredients]
+    const ingredientsList = [...ingredients]
     ingredientsList.splice(index, 1)
 
     setIngredients(ingredientsList)
@@ -66,14 +107,68 @@ export default function PublicRecipe({ navigation }: PublicRecipeProps) {
     })
   }
 
-  function handlePublishRecipe() {
-    setIsLoading((prev) => !prev)
+  /**
+   * Publicar receita na aplicação
+   *
+   * @author Darllinson Azevedo
+   *
+   * @param data Payload com os dados do formulário
+   */
+  function handlePublishRecipe(data: RegisterRecipeForm) {
+    setIsLoading(true)
 
-    setTimeout(() => {
-      setIsLoading((prev) => !prev)
-      showToast()
-    }, 2000)
+    /** Verificando se a lista de ingredientes está vazia */
+    if (!ingredients.length) {
+      setIsLoading(false)
+      Alert.alert(
+        'Calma aí chef 🧑‍🍳! Coloque pelo menos um ingrediente para a sua receita.',
+      )
+
+      return
+    }
+
+    /** Percorrendo a lista de ingredientes e verificando se algum está vazio */
+    for (let index = 0; index < ingredients.length; index++) {
+      const ingredient = ingredients[index]
+      if (!ingredient.trim()) {
+        setIsLoading(false)
+        Alert.alert('Opa opa... 🕵️. Algum ingrediente cadastrado está vazio.')
+
+        return
+      }
+    }
+
+    const payload: RegisterRecipe = {
+      name: data.name.trim(),
+      ingredients,
+      instructions: data.instructions.trim(),
+      photoURL: data.photoURL || null,
+      videoURL: data.videoURL || null,
+      typeMeal: null,
+      creatorID: userInfo?.user_id || '',
+    }
+
+    privateApi
+      .post('/meals', payload)
+      .then(() => {
+        setIsLoading(false)
+        showToast()
+        reset()
+        setIngredients([])
+      })
+      .catch((err) => {
+        setIsLoading(false)
+        console.log('Erro ao publicar receita: ' + err.message)
+      })
   }
+
+  useEffect(() => {
+    /** Recuperando informações do usuário autenticado */
+    SecureStore.getItemAsync(SecureStoreKeys.TOKEN).then((token) => {
+      const decodedToken = jwtDecode(token || '')
+      setUserInfo(decodedToken)
+    })
+  }, [])
 
   return (
     <>
@@ -119,28 +214,54 @@ export default function PublicRecipe({ navigation }: PublicRecipeProps) {
                 da sua obra de arte aqui 😎
               </Text>
 
-              <TextInput
-                className="mt-2 w-full rounded-full bg-zinc-50 px-4 py-3 font-body text-base text-zinc-900"
-                placeholder="Coloque aqui a URL da sua foto"
-                placeholderTextColor="#131313"
-                returnKeyType="send"
-                enterKeyHint="send"
-                keyboardAppearance="default"
-                cursorColor="#131313"
-                value={preview}
-                onChangeText={setPreview}
+              <Controller
+                control={control}
+                name="photoURL"
+                render={({ field }) => (
+                  <TextInput
+                    className="mt-2 w-full rounded-full bg-zinc-50 px-4 py-3 font-body text-base text-zinc-900"
+                    placeholder="Coloque aqui a URL da sua foto"
+                    placeholderTextColor="#131313"
+                    returnKeyType="send"
+                    enterKeyHint="send"
+                    keyboardAppearance="default"
+                    cursorColor="#131313"
+                    onChangeText={field.onChange}
+                    onBlur={field.onBlur}
+                    value={field.value}
+                  />
+                )}
               />
+              {errors.photoURL && (
+                <Text className="mt-2 font-body text-sm text-danger">
+                  {errors.photoURL.message}
+                </Text>
+              )}
             </TouchableOpacity>
 
-            <TextInput
-              className="mt-4 w-full rounded-full bg-zinc-50 px-4 py-3 font-body text-base text-zinc-900"
-              placeholder="Digite o nome da receita"
-              placeholderTextColor="#131313"
-              returnKeyType="send"
-              enterKeyHint="send"
-              keyboardAppearance="default"
-              cursorColor="#131313"
+            <Controller
+              control={control}
+              name="name"
+              render={({ field }) => (
+                <TextInput
+                  className="mt-4 w-full rounded-full bg-zinc-50 px-4 py-3 font-body text-base text-zinc-900"
+                  placeholder="Digite o nome da receita"
+                  placeholderTextColor="#131313"
+                  returnKeyType="send"
+                  enterKeyHint="send"
+                  keyboardAppearance="default"
+                  cursorColor="#131313"
+                  onChangeText={field.onChange}
+                  onBlur={field.onBlur}
+                  value={field.value}
+                />
+              )}
             />
+            {errors.name && (
+              <Text className="mt-2 font-body text-sm text-danger">
+                {errors.name.message}
+              </Text>
+            )}
           </View>
           <ImageBackground
             source={Background}
@@ -151,14 +272,28 @@ export default function PublicRecipe({ navigation }: PublicRecipeProps) {
               <View className="w-full flex-col">
                 <Text className="font-mouse text-3xl">Instruções</Text>
 
-                <TextInput
-                  className="mt-4 h-36 w-full rounded-xl bg-zinc-200 px-4 py-3 font-body text-base text-zinc-500"
-                  placeholder="Capriche nas instruções para a receita! Recomendamos que seja em formato de tópicos."
-                  placeholderTextColor="#4F4F4F"
-                  keyboardAppearance="default"
-                  cursorColor="#4F4F4F"
-                  multiline
+                <Controller
+                  control={control}
+                  name="instructions"
+                  render={({ field }) => (
+                    <TextInput
+                      className="mt-4 h-36 w-full rounded-xl bg-zinc-200 px-4 py-3 font-body text-base text-zinc-500"
+                      placeholder="Capriche nas instruções para a receita! Recomendamos que seja em formato de tópicos."
+                      placeholderTextColor="#4F4F4F"
+                      keyboardAppearance="default"
+                      cursorColor="#4F4F4F"
+                      multiline
+                      onChangeText={field.onChange}
+                      onBlur={field.onBlur}
+                      value={field.value}
+                    />
+                  )}
                 />
+                {errors.instructions && (
+                  <Text className="mt-2 font-body text-sm text-danger">
+                    {errors.instructions.message}
+                  </Text>
+                )}
               </View>
 
               <View className="mt-4 w-full flex-col">
@@ -218,16 +353,23 @@ export default function PublicRecipe({ navigation }: PublicRecipeProps) {
                 </Text>
 
                 <View className="mt-4 w-full rounded-xl bg-zinc-200 p-4">
-                  <TextInput
-                    className="w-full rounded-full bg-zinc-50 px-4 py-3 font-body text-base text-zinc-900"
-                    placeholder="Adicione o link do vídeo aqui"
-                    placeholderTextColor="#4F4F4F"
-                    returnKeyType="send"
-                    enterKeyHint="send"
-                    keyboardAppearance="default"
-                    cursorColor="#4F4F4F"
-                    value={preview}
-                    onChangeText={setPreview}
+                  <Controller
+                    control={control}
+                    name="videoURL"
+                    render={({ field }) => (
+                      <TextInput
+                        className="w-full rounded-full bg-zinc-50 px-4 py-3 font-body text-base text-zinc-900"
+                        placeholder="Adicione o link do vídeo aqui"
+                        placeholderTextColor="#4F4F4F"
+                        returnKeyType="send"
+                        enterKeyHint="send"
+                        keyboardAppearance="default"
+                        cursorColor="#4F4F4F"
+                        onChangeText={field.onChange}
+                        onBlur={field.onBlur}
+                        value={field.value}
+                      />
+                    )}
                   />
                 </View>
               </View>
@@ -240,7 +382,7 @@ export default function PublicRecipe({ navigation }: PublicRecipeProps) {
                   borderTopRightRadius: 40,
                   borderBottomLeftRadius: 40,
                 }}
-                onPress={handlePublishRecipe}
+                onPress={handleSubmit(handlePublishRecipe)}
               >
                 <Text className="font-title text-lg text-white">Publicar</Text>
               </TouchableOpacity>

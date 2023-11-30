@@ -25,7 +25,7 @@ privateApi.interceptors.request.use(
     const tokenExpirationTime = verifyTokenExpirationTime(decodedToken)
 
     /** Verificando se o token vai expirar em 5 minutos (300 seg.) */
-    if (tokenExpirationTime <= 300) {
+    if (tokenExpirationTime < 300) {
       privateApi
         .post(
           '/auth/refresh',
@@ -38,6 +38,9 @@ privateApi.interceptors.request.use(
             response.data['access-token'],
           )
           token = response.data['access-token']
+        })
+        .catch((err) => {
+          console.log('Erro renovar o token - error: ' + err)
         })
     }
 
