@@ -43,16 +43,16 @@ export default function PublicRecipe({ navigation }: PublicRecipeProps) {
   const registerRecipeSchema = z.object({
     name: z
       .string()
-      .min(1, 'O nome da receita é obrigatório')
-      .min(3, 'O nome da receita deve ter no mínimo 3 caracteres'),
+      .min(1, 'O nome da receita é obrigatório.')
+      .min(3, 'O nome da receita deve ter no mínimo 3 caracteres.'),
     photoURL: z
       .string()
-      .min(1, 'A URL da foto é obrigatória')
-      .url('URL inválida'),
+      .min(1, 'A URL da foto é obrigatória.')
+      .url('URL inválida.'),
     videoURL: z.string(),
     instructions: z
       .string()
-      .min(20, 'As instruções devem possuir pelo menos 20 caracteres'),
+      .min(20, 'As instruções devem possuir pelo menos 20 caracteres.'),
   })
   type RegisterRecipeForm = z.infer<typeof registerRecipeSchema>
 

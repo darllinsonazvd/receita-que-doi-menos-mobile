@@ -32,7 +32,7 @@ export default function Home({ navigation }: HomeProps) {
   const [isSearching, setIsSearching] = useState<boolean>(false)
   const [isLoading, setIsLoading] = useState<boolean>(false)
 
-  /** Fake search (searching recipes in memory 😜) */
+  /** Fake search (searching recipes in memory) */
   function handleSearch(searchTerm: string) {
     setIsLoading(true)
 
