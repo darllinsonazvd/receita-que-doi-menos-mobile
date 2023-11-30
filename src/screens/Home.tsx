@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react'
+import { useEffect, useState } from 'react'
 import {
   ImageBackground,
   ScrollView,
@@ -14,18 +14,13 @@ import * as SecureStore from 'expo-secure-store'
 import { Header } from '../components/Header'
 import { RecipeCard } from '../components/RecipeCard'
 
-import Background from '../assets/img/bg-register.png'
 import { SecureStoreKeys } from '../utils/enums/secure-store-keys'
+import { recipes as mockRecipes } from '../utils/mocks/recipes'
+import { Recipe } from '../utils/types/recipe'
 import { clearString } from '../utils/functions/clear-string'
-import { privateApi } from '../lib/api'
-import { jwtDecode } from '../utils/functions/jwt-decode'
 
-interface RecipeFromBackend {
-  id: string
-  imgUrl: string
-  name: string
-  author: string
-}
+import Background from '../assets/img/bg-register.png'
+import { jwtDecode } from '../utils/functions/jwt-decode'
 
 type HomeProps = {
   navigation: any
@@ -33,25 +28,11 @@ type HomeProps = {
 
 export default function Home({ navigation }: HomeProps) {
   const [search, setSearch] = useState<string>('')
-  const [recipes, setRecipes] = useState<RecipeFromBackend[]>([])
+  const [recipes, setRecipes] = useState<Recipe[]>([])
   const [isSearching, setIsSearching] = useState<boolean>(false)
   const [isLoading, setIsLoading] = useState<boolean>(false)
 
-  const fetchRecipes = () => {
-    setIsLoading(true)
-
-    privateApi
-      .get('/meals/all')
-      .then((response) => {
-        setRecipes(response.data)
-        setIsLoading(false)
-      })
-      .catch((error) => {
-        console.error('Erro ao buscar receitas:', error)
-        setIsLoading(false)
-      })
-  }
-
+  /** Fake search (searching recipes in memory 😜) */
   function handleSearch(searchTerm: string) {
     setIsLoading(true)
 
@@ -77,12 +58,10 @@ export default function Home({ navigation }: HomeProps) {
   function handleCancelSearch() {
     setSearch('')
     setIsSearching(false)
-    fetchRecipes()
+    setRecipes(mockRecipes)
   }
 
   useEffect(() => {
-    fetchRecipes()
-
     SecureStore.getItemAsync(SecureStoreKeys.TOKEN).then((token) => {
       const decodedToken = jwtDecode(token || '')
 
@@ -94,6 +73,8 @@ export default function Home({ navigation }: HomeProps) {
         position: 'bottom',
       })
     })
+
+    setRecipes(mockRecipes)
   }, [])
 
   return (
@@ -147,7 +128,12 @@ export default function Home({ navigation }: HomeProps) {
                     })
                   }
                 >
-                  <RecipeCard recipe={recipe} showFavoriteButton={true} />
+                  <RecipeCard
+                    imgUrl={recipe.imgUrl}
+                    name={recipe.name}
+                    author={recipe.author}
+                    showFavoriteButton={true}
+                  />
                 </TouchableOpacity>
               )
             })}

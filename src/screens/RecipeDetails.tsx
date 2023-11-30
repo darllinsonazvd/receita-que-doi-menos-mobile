@@ -13,6 +13,7 @@ import {
 import Ionicons from '@expo/vector-icons/Ionicons'
 
 import { Recipe } from '../utils/types/recipe'
+import { recipes } from '../utils/mocks/recipes'
 import { IngredientItem } from '../components/IngredientItem'
 
 import BgRecipe from '../assets/img/bg-recipe.png'
@@ -44,22 +45,21 @@ export default function RecipeDetails({
         `Não foi possível acessar a url: ${URL}, contate os administradores do Receita!`,
       )
     }
-  }, [])
+  }, [URL])
 
   function handleFavorite() {
     setIsFavorite((prev) => !prev)
   }
 
+  /** Buscando receita na lista de receitas "mockadas" */
   useEffect(() => {
-    if (recipeId && Array.isArray(recipe)) {
-      const foundedRecipe = recipe.find((recipe) => recipe.id === recipeId)
+    const foundedRecipe = recipes.find((recipe) => recipe.id === recipeId)
 
-      if (foundedRecipe) {
-        setRecipe(foundedRecipe)
-        setIsFavorite(foundedRecipe.isFavorite)
-      }
+    if (foundedRecipe) {
+      setRecipe(foundedRecipe)
+      setIsFavorite(foundedRecipe.isFavorite)
     }
-  }, [recipeId, recipe])
+  }, [])
 
   return (
     <View className="flex-1">
