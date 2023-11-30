@@ -1,20 +1,26 @@
-import { useState } from 'react'
+import React, { useState } from 'react'
 import { ImageBackground, View, Text, TouchableOpacity } from 'react-native'
 import Ionicons from '@expo/vector-icons/Ionicons'
 
-type RecipeCardProps = {
-  imgUrl: string
+interface RecipeFromBackend {
+  id: string
+  photo: string
   name: string
-  author: string
+  instructions: string
+  creator: {
+    id: string
+    name: string
+    email: string
+  }
+}
+
+interface RecipeCardProps {
+  recipe: RecipeFromBackend
   showFavoriteButton: boolean
 }
 
-export function RecipeCard({
-  imgUrl,
-  name,
-  author,
-  showFavoriteButton,
-}: RecipeCardProps) {
+export function RecipeCard({ recipe, showFavoriteButton }: RecipeCardProps) {
+  const { photo, name, creator } = recipe
   const [isFavorite, setIsFavorite] = useState<boolean>(false)
 
   function handleFavorite() {
@@ -23,9 +29,7 @@ export function RecipeCard({
 
   return (
     <ImageBackground
-      source={{
-        uri: imgUrl,
-      }}
+      source={{ uri: photo }}
       className="relative mb-5 h-40 w-full overflow-hidden"
       imageStyle={{
         borderRadius: 30,
@@ -61,7 +65,7 @@ export function RecipeCard({
           {name}
         </Text>
         <Text className="-mt-3 font-body text-lg text-zinc-50 shadow-xl">
-          por {author}
+          por {creator.name} {/* Exibindo o nome do criador/autor */}
         </Text>
       </View>
     </ImageBackground>
