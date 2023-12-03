@@ -26,22 +26,21 @@ privateApi.interceptors.request.use(
 
     /** Verificando se o token vai expirar em 5 minutos (300 seg.) */
     if (tokenExpirationTime < 300) {
-      privateApi
-        .post(
+      try {
+        const response = await privateApi.post(
           '/auth/refresh',
           { refresh_token: refreshToken },
           { headers: { Authorization: 'Bearer ' + token } },
         )
-        .then(async (response) => {
-          await SecureStore.setItemAsync(
-            SecureStoreKeys.TOKEN,
-            response.data['access-token'],
-          )
-          token = response.data['access-token']
-        })
-        .catch((err) => {
-          console.log('Erro renovar o token - error: ' + err)
-        })
+        await SecureStore.setItemAsync(
+          SecureStoreKeys.TOKEN,
+          response.data['access-token'],
+        )
+        token = response.data['access-token']
+        config.headers.Authorization = `Bearer ${token}` // Update the Authorization header
+      } catch (err) {
+        console.log('Erro renovar o token - error: ' + err)
+      }
     }
 
     if (!config.headers.Authorization) {
@@ -54,3 +53,4 @@ privateApi.interceptors.request.use(
     return Promise.reject(err)
   },
 )
+

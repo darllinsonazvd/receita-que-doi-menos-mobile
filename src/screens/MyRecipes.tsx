@@ -9,11 +9,13 @@ import {
 } from 'react-native'
 import Ionicons from '@expo/vector-icons/Ionicons'
 
-import { recipes } from '../utils/mocks/recipes'
+import { Recipe } from '../utils/types/recipe';
 
 import { RecipeCard } from '../components/RecipeCard'
 
 import Background from '../assets/img/bg-register.png'
+
+import { useState } from 'react';
 
 type MyRecipesProps = {
   navigation: any
@@ -21,6 +23,7 @@ type MyRecipesProps = {
 
 export default function MyRecipes({ navigation }: MyRecipesProps) {
   const { top } = useSafeAreaInsets()
+  const [recipes] = useState<Recipe[]>([]);
 
   return (
     <View className="flex-1 bg-zinc-100" style={{ paddingTop: top }}>
@@ -63,10 +66,9 @@ export default function MyRecipes({ navigation }: MyRecipesProps) {
                 }
               >
                 <RecipeCard
-                  imgUrl={recipe.imgUrl}
-                  name={recipe.name}
-                  author={recipe.author}
-                  showFavoriteButton={false}
+                  key={recipe.id}
+                  recipe={recipe}
+                  showFavoriteButton={true}
                 />
               </TouchableOpacity>
             )

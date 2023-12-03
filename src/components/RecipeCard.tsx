@@ -1,30 +1,27 @@
-import { useState } from 'react'
-import { ImageBackground, View, Text, TouchableOpacity } from 'react-native'
-import Ionicons from '@expo/vector-icons/Ionicons'
+import React, { useState, useEffect } from 'react';
+import { View, Text, ImageBackground, TouchableOpacity } from 'react-native';
+import Ionicons from '@expo/vector-icons/Ionicons';
+import axios from 'axios';
+import { Recipe } from '../utils/types/recipe';
 
 type RecipeCardProps = {
-  imgUrl: string
-  name: string
-  author: string
-  showFavoriteButton: boolean
-}
+  recipe: Recipe;
+  showFavoriteButton: boolean;
+};
 
-export function RecipeCard({
-  imgUrl,
-  name,
-  author,
-  showFavoriteButton,
-}: RecipeCardProps) {
-  const [isFavorite, setIsFavorite] = useState<boolean>(false)
+export function RecipeCard({ recipe, showFavoriteButton }: RecipeCardProps) {
+  const [isFavorite, setIsFavorite] = useState<boolean>(false);
 
   function handleFavorite() {
-    setIsFavorite((prev) => !prev)
+    setIsFavorite((prev) => !prev);
   }
+
+  const { photo, name, creator } = recipe;
 
   return (
     <ImageBackground
       source={{
-        uri: imgUrl,
+        uri: photo,
       }}
       className="relative mb-5 h-40 w-full overflow-hidden"
       imageStyle={{
@@ -61,9 +58,41 @@ export function RecipeCard({
           {name}
         </Text>
         <Text className="-mt-3 font-body text-lg text-zinc-50 shadow-xl">
-          por {author}
+          por {creator.name}
         </Text>
       </View>
     </ImageBackground>
   )
 }
+
+const HomeScreen = () => {
+  const [recipes, setRecipes] = useState<Recipe[]>([]);
+
+  useEffect(() => {
+    const fetchRecipes = async () => {
+      try {
+        const response = await axios.get('https://receita-que-doi-menos-server.up.railway.app/meals/all'); 
+        const data: Recipe[] = response.data;
+        setRecipes(data);
+      } catch (error) {
+        console.error('Erro ao buscar receitas:', error);
+      }
+    };
+
+    fetchRecipes();
+  }, []);
+
+  return (
+    <View>
+      {recipes.map((recipe, index) => (
+        <RecipeCard
+          key={index}
+          recipe={recipe}
+          showFavoriteButton={true}
+        />
+      ))}
+    </View>
+  );
+};
+
+export default HomeScreen;

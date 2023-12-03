@@ -57,7 +57,7 @@ export default function RecipeDetails({
 
     if (foundedRecipe) {
       setRecipe(foundedRecipe)
-      setIsFavorite(foundedRecipe.isFavorite)
+      //setIsFavorite(foundedRecipe.isFavorite)
     }
   }, [])
 
@@ -66,7 +66,7 @@ export default function RecipeDetails({
       <StatusBar style="dark" />
 
       <ImageBackground
-        source={{ uri: recipe?.imgUrl }}
+        source={{ uri: recipe?.photo }}
         resizeMode="cover"
         className="relative flex-[0.6] items-center justify-center"
       >
@@ -95,7 +95,7 @@ export default function RecipeDetails({
             {recipe?.name}
           </Text>
           <Text className="-mt-2 font-body text-lg text-zinc-50 shadow-xl">
-            por {recipe?.author}
+            por {recipe?.creator.name}
           </Text>
         </View>
       </ImageBackground>
