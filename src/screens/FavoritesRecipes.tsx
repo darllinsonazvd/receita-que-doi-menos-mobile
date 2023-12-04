@@ -32,8 +32,7 @@ export default function FavoritesRecipes({
 
   const fetchRecipes = () => {
     if (userInfo) {
-      const { user_id } = userInfo; // Acesso às propriedades do JWT
-  
+      const { user_id } = userInfo; 
       privateApi
         .get(`/user/favoriteRecipes/${user_id}`)
         .then((response) => {

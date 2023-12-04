@@ -88,14 +88,13 @@ export default function MyRecipes({ navigation }: MyRecipesProps) {
               </Text>
             </View>
           </View>
-
           {recipes.map((recipe) => (
             <TouchableOpacity
               key={recipe.id}
               onPress={() => navigation.navigate('RecipeDetails', { recipeId: recipe.id })}
               className="w-full mb-4"
             >
-              <Text className="text-lg font-semibold">{recipe.name}</Text>
+              <Text className="text-lg font-semibold">{recipe.name}</Text> 
               <RecipeCard
                   key={recipe.id}
                   recipe={recipe}
