@@ -1,53 +1,85 @@
-import React, { useState, useEffect } from 'react';
-import { View, Text, ImageBackground, TouchableOpacity } from 'react-native';
-import Ionicons from '@expo/vector-icons/Ionicons';
-import axios from 'axios';
-import { Recipe } from '../utils/types/recipe';
-import * as SecureStore from 'expo-secure-store';
-import { jwtDecode } from 'jwt-decode';
+import React, { useState, useEffect } from 'react'
+import { View, Text, ImageBackground, TouchableOpacity } from 'react-native'
+import Ionicons from '@expo/vector-icons/Ionicons'
+import { Recipe } from '../utils/types/recipe'
+import * as SecureStore from 'expo-secure-store'
+import { jwtDecode } from '../utils/functions/jwt-decode'
 
-import type { JwtDecode } from '../utils/types/jwt';
+import { SecureStoreKeys } from '../utils/enums/secure-store-keys'
+import { privateApi } from '../lib/api'
+import Toast from 'react-native-toast-message'
 
 type RecipeCardProps = {
-  recipe: Recipe;
-  showFavoriteButton: boolean;
-};
+  recipe: Recipe
+  showFavoriteButton: boolean
+  favoritedRecipe: boolean
+}
 
-export function RecipeCard({ recipe, showFavoriteButton }: RecipeCardProps) {
-  const [isFavorite, setIsFavorite] = useState<boolean>(false);
-  const [userInfo, setUserInfo] = useState<any>(null);
+export function RecipeCard({
+  recipe,
+  showFavoriteButton,
+  favoritedRecipe,
+}: RecipeCardProps) {
+  const [isFavorite, setIsFavorite] = useState<boolean>(false)
+  const [userInfo, setUserInfo] = useState<any>(null)
 
   useEffect(() => {
-    SecureStore.getItemAsync('TOKEN').then((token) => {
-      const decodedToken = jwtDecode(token || '');
-      setUserInfo(decodedToken);
-    });
-  }, []);
-
-  async function handleFavorite() {
-    setIsFavorite((prev) => !prev);
-    try {
-      const token = await SecureStore.getItemAsync('TOKEN');
-      
-      // Use o tipo JwtDecode para representar o payload decodificado do token JWT
-      const decodedToken = jwtDecode(token || '') as JwtDecode;
-      const userID = decodedToken?.user_id;
-      const mealID = recipe.id;
-  
-      if (userID) {
-        const url = `https://receita-que-doi-menos-server.up.railway.app/user/likeMeal/${userID}/${mealID}`;
-        await axios.put(url, null, {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        });
-      }
-    } catch (error) {
-      console.error('Erro ao favoritar a receita:', error);
+    SecureStore.getItemAsync(SecureStoreKeys.TOKEN).then((token) => {
+      const decodedToken = jwtDecode(token || '')
+      setUserInfo(decodedToken)
+    })
+    setIsFavorite(favoritedRecipe)
+  }, [])
+  const handleFavorite = () => {
+    const userID: string = userInfo.user_id
+    const mealID: string = recipe.id
+    if (!isFavorite) {
+      privateApi
+        .put(`/user/likeMeal/${userID}/${mealID}`)
+        .then(() => {
+          setIsFavorite((prev) => !prev)
+          Toast.show({
+            type: 'success',
+            text1: `Receita Favoritada com Sucesso!`,
+            text2: 'Veja suas receitas favoritas na sua aba de perfil',
+            visibilityTime: 3000,
+            position: 'bottom',
+          })
+        })
+        .catch((error) => {
+          Toast.show({
+            type: 'error',
+            text1: `Não foi possível favoritar sua receita!`,
+            visibilityTime: 3000,
+            position: 'bottom',
+          })
+          console.error(`Erro ao favoritar Receita: ${error}`)
+        })
+    } else {
+      privateApi
+        .put(`/user/unlikeMeal/${userID}/${mealID}`)
+        .then(() => {
+          setIsFavorite((prev) => !prev)
+          Toast.show({
+            type: 'success',
+            text1: `Receita Defavoritada com Sucesso!`,
+            visibilityTime: 3000,
+            position: 'bottom',
+          })
+        })
+        .catch((error) => {
+          Toast.show({
+            type: 'error',
+            text1: `Não foi possível Defavoritar sua receita!`,
+            visibilityTime: 3000,
+            position: 'bottom',
+          })
+          console.error(`Erro ao favoritar Receita: ${error}`)
+        })
     }
   }
 
-  const { photo, name, creator } = recipe;
+  const { photo, name, creator } = recipe
 
   return (
     <ImageBackground
@@ -87,45 +119,3 @@ export function RecipeCard({ recipe, showFavoriteButton }: RecipeCardProps) {
     </ImageBackground>
   )
 }
-
-const HomeScreen = () => {
-  const [recipes, setRecipes] = useState<Recipe[]>([]);
-  const [userInfo, setUserInfo] = useState<any>(null);
-
-  useEffect(() => {
-    const fetchRecipes = async () => {
-      try {
-        const token = await SecureStore.getItemAsync('TOKEN');
-        const decodedToken = jwtDecode(token || '');
-        setUserInfo(decodedToken);
-
-        const response = await axios.get('https://receita-que-doi-menos-server.up.railway.app/meals/all', {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        });
-
-        const data: Recipe[] = response.data;
-        setRecipes(data);
-      } catch (error) {
-        console.error('Erro ao buscar receitas:', error);
-      }
-    };
-
-    fetchRecipes();
-  }, []);
-
-  return (
-    <View>
-      {recipes.map((recipe, index) => (
-        <RecipeCard
-          key={index}
-          recipe={recipe}
-          showFavoriteButton={true}
-        />
-      ))}
-    </View>
-  );
-};
-
-export default HomeScreen;

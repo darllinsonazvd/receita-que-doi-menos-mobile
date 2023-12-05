@@ -11,7 +11,7 @@ import {
   View,
 } from 'react-native'
 import Ionicons from '@expo/vector-icons/Ionicons'
-import { privateApi } from '../lib/api';
+import { privateApi } from '../lib/api'
 import { Recipe } from '../utils/types/recipe'
 import { IngredientItem } from '../components/IngredientItem'
 
@@ -22,54 +22,56 @@ type RecipeDetailsProps = {
   route: any
 }
 
-
 export const getRecipeById = async (recipeId: string) => {
   try {
-    const response = await privateApi.get(`/meals/byMealID/${recipeId}`);
-    return response.data; 
+    const response = await privateApi.get(`/meals/byMealID/${recipeId}`)
+    return response.data
   } catch (error) {
-    console.error('Erro ao buscar a receita:', error);
-    throw new Error('Erro ao buscar a receita');
+    console.error('Erro ao buscar a receita:', error)
+    throw new Error('Erro ao buscar a receita')
   }
-};
+}
 
-export default function RecipeDetails({ route, navigation }: RecipeDetailsProps) {
-  const { recipeId } = route.params as { recipeId: string };
+export default function RecipeDetails({
+  route,
+  navigation,
+}: RecipeDetailsProps) {
+  const { recipeId } = route.params as { recipeId: string }
 
-  const [recipe, setRecipe] = useState<Recipe | null>(null);
-  const [isFavorite, setIsFavorite] = useState(false);
-  const [showFullInstructions, setShowFullInstructions] = useState(false);
+  const [recipe, setRecipe] = useState<Recipe | null>(null)
+  const [isFavorite, setIsFavorite] = useState(false)
+  const [showFullInstructions, setShowFullInstructions] = useState(false)
 
   const handleOpenVideo = useCallback(async () => {
-    const URL = 'https://youtube.com';
-    const supported = await Linking.canOpenURL(URL);
+    const URL = recipe?.video || 'https://youtube.com/'
+    const supported = await Linking.canOpenURL(URL)
 
     if (supported) {
-      await Linking.openURL(URL);
+      await Linking.openURL(URL)
     } else {
       Alert.alert(
         `Não foi possível acessar a url: ${URL}, contate os administradores do Receita!`,
-      );
+      )
     }
-  }, []);
+  }, [])
 
   function handleFavorite() {
-    setIsFavorite(prev => !prev);
+    setIsFavorite((prev) => !prev)
   }
 
   useEffect(() => {
     const fetchRecipe = async () => {
       try {
-        const foundRecipe = await getRecipeById(recipeId);
-        setRecipe(foundRecipe);
-        setIsFavorite(foundRecipe.isFavorite);
+        const foundRecipe = await getRecipeById(recipeId)
+        setRecipe(foundRecipe)
+        setIsFavorite(foundRecipe.isFavorite)
       } catch (error) {
-        console.error('Erro ao buscar a receita:', error);
+        console.error('Erro ao buscar a receita:', error)
       }
-    };
+    }
 
-    fetchRecipe();
-  }, []);
+    fetchRecipe()
+  }, [])
 
   return (
     <View className="flex-1">
@@ -121,7 +123,7 @@ export default function RecipeDetails({ route, navigation }: RecipeDetailsProps)
             </Text>
             <TouchableOpacity
               activeOpacity={0.7}
-              onPress={() => setShowFullInstructions(prev => !prev)}
+              onPress={() => setShowFullInstructions((prev) => !prev)}
             >
               {showFullInstructions ? (
                 <Text className="mt-2 font-body text-lg text-zinc-900">
@@ -140,33 +142,45 @@ export default function RecipeDetails({ route, navigation }: RecipeDetailsProps)
             <Text className="mb-2 font-mouse text-3xl text-zinc-900">
               Ingredientes
             </Text>
-
-            <IngredientItem quantity={100} measure="mg" name="Ingrediente 1" />
-            <IngredientItem quantity={100} measure="mg" name="Ingrediente 2" />
-            <IngredientItem quantity={100} measure="mg" name="Ingrediente 3" />
-            <IngredientItem quantity={100} measure="mg" name="Ingrediente 4" />
-            <IngredientItem quantity={100} measure="mg" name="Ingrediente 5" />
-            <IngredientItem quantity={100} measure="mg" name="Ingrediente 6" />
-            <IngredientItem quantity={100} measure="mg" name="Ingrediente 7" />
-            <IngredientItem quantity={100} measure="mg" name="Ingrediente 8" />
+            {recipe?.ingredients.map((ingredient: string, index: number) => (
+              <IngredientItem
+                key={index}
+                quantity={100}
+                measure="mg"
+                name={ingredient}
+              />
+            ))}
           </View>
-
-          <View className="mb-8 mt-4 w-full rounded-2xl bg-zinc-100 p-4">
-            <Text className="mb-2 font-mouse text-3xl text-zinc-900">
-              Tá enrolado? Assista esse vídeo!
-            </Text>
-
-            <TouchableOpacity activeOpacity={0.7} onPress={handleOpenVideo}>
-              <Text className="mt-2 font-body text-lg text-zinc-900">
-                Oba! Nosso(a) 👩‍🍳 Chef 👨‍🍳 liberou um vídeo sobre a receita, para
-                assistir{' '}
-                <Text className="font-title text-zinc-900">clique aqui</Text> e
-                Receite, que dói menos!
+          {recipe?.video ? (
+            <View className="mb-8 mt-4 w-full rounded-2xl bg-zinc-100 p-4">
+              <Text className="mb-2 font-mouse text-3xl text-zinc-900">
+                Tá enrolado? Assista esse vídeo!
               </Text>
-            </TouchableOpacity>
-          </View>
+
+              <TouchableOpacity activeOpacity={0.7} onPress={handleOpenVideo}>
+                <Text className="mt-2 font-body text-lg text-zinc-900">
+                  Oba! Nosso(a) 👩‍🍳 Chef 👨‍🍳 liberou um vídeo sobre a receita,
+                  para assistir{' '}
+                  <Text className="font-title text-zinc-900">clique aqui</Text>{' '}
+                  e Receite, que dói menos!
+                </Text>
+              </TouchableOpacity>
+            </View>
+          ) : (
+            <View className="mb-8 mt-4 w-full rounded-2xl bg-zinc-100 p-4">
+              <Text className="mb-2 font-mouse text-3xl text-zinc-900">
+                Poxa Vida! 😓
+              </Text>
+              <Text className="mb-2 font-mouse text-lg text-zinc-900">
+                Infelizmente nosso Chef não disponibilizou vídeo!
+              </Text>
+              <Text className="font-title text-zinc-900">
+                Mas quem arrisca não petisca, não é mesmo?
+              </Text>
+            </View>
+          )}
         </ImageBackground>
       </ScrollView>
     </View>
-  );
+  )
 }
