@@ -1,3 +1,4 @@
+import { useState, useEffect } from 'react'
 import { StatusBar } from 'expo-status-bar'
 import {
   ImageBackground,
@@ -7,11 +8,14 @@ import {
   View,
 } from 'react-native'
 import { useSafeAreaInsets } from 'react-native-safe-area-context'
+import { JwtDecode } from '../utils/types/jwt'
 import Ionicons from '@expo/vector-icons/Ionicons'
-
-import { recipes } from '../utils/mocks/recipes'
-
+import { SecureStoreKeys } from '../utils/enums/secure-store-keys';
+import * as SecureStore from 'expo-secure-store';
+import { privateApi } from '../lib/api';
+import { jwtDecode } from '../utils/functions/jwt-decode';
 import { RecipeCard } from '../components/RecipeCard'
+import { Recipe } from '../utils/types/recipe';
 
 import Background from '../assets/img/bg-register.png'
 
@@ -23,6 +27,36 @@ export default function FavoritesRecipes({
   navigation,
 }: FavoritesRecipesProps) {
   const { top } = useSafeAreaInsets()
+  const [recipes, setRecipes] = useState<Recipe[]>([]);
+  const [userInfo, setUserInfo] = useState<JwtDecode | null>(null);
+
+  const fetchRecipes = () => {
+    if (userInfo) {
+      const { user_id } = userInfo; 
+      privateApi
+        .get(`/user/favoriteRecipes/${user_id}`)
+        .then((response) => {
+          setRecipes(response.data);
+        })
+        .catch((error) => {
+          console.error('Erro ao buscar receitas:', error);
+        });
+    }
+  }
+  useEffect(() => {
+    /** Recuperando informações do usuário autenticado */
+    SecureStore.getItemAsync(SecureStoreKeys.TOKEN).then((token) => {
+      const decodedToken = jwtDecode(token || '')
+      setUserInfo(decodedToken)
+    })
+  }, [])
+
+  useEffect(() => {
+    if (userInfo) {
+      fetchRecipes();
+    }
+  }, [userInfo]);
+
 
   return (
     <View className="flex-1 bg-zinc-100" style={{ paddingTop: top }}>
@@ -65,10 +99,9 @@ export default function FavoritesRecipes({
                 }
               >
                 <RecipeCard
-                  imgUrl={recipe.imgUrl}
-                  name={recipe.name}
-                  author={recipe.author}
-                  showFavoriteButton={false}
+                  key={recipe.id}
+                  recipe={recipe}
+                  showFavoriteButton={true}
                 />
               </TouchableOpacity>
             )

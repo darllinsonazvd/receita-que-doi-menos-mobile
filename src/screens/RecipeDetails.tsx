@@ -11,9 +11,8 @@ import {
   View,
 } from 'react-native'
 import Ionicons from '@expo/vector-icons/Ionicons'
-
+import { privateApi } from '../lib/api';
 import { Recipe } from '../utils/types/recipe'
-import { recipes } from '../utils/mocks/recipes'
 import { IngredientItem } from '../components/IngredientItem'
 
 import BgRecipe from '../assets/img/bg-recipe.png'
@@ -23,50 +22,61 @@ type RecipeDetailsProps = {
   route: any
 }
 
-export default function RecipeDetails({
-  route,
-  navigation,
-}: RecipeDetailsProps) {
-  const { recipeId } = route.params
 
-  const [recipe, setRecipe] = useState<Recipe | null>(null)
-  const [isFavorite, setIsFavorite] = useState<boolean>(false)
-  const [showFullInstructions, setShowFullInstructions] =
-    useState<boolean>(false)
+export const getRecipeById = async (recipeId: string) => {
+  try {
+    const response = await privateApi.get(`/meals/byMealID/${recipeId}`);
+    return response.data; 
+  } catch (error) {
+    console.error('Erro ao buscar a receita:', error);
+    throw new Error('Erro ao buscar a receita');
+  }
+};
+
+export default function RecipeDetails({ route, navigation }: RecipeDetailsProps) {
+  const { recipeId } = route.params as { recipeId: string };
+
+  const [recipe, setRecipe] = useState<Recipe | null>(null);
+  const [isFavorite, setIsFavorite] = useState(false);
+  const [showFullInstructions, setShowFullInstructions] = useState(false);
 
   const handleOpenVideo = useCallback(async () => {
-    const URL = 'https://youtube.com'
-    const supported = await Linking.canOpenURL(URL)
+    const URL = 'https://youtube.com';
+    const supported = await Linking.canOpenURL(URL);
 
     if (supported) {
-      await Linking.openURL(URL)
+      await Linking.openURL(URL);
     } else {
       Alert.alert(
         `Não foi possível acessar a url: ${URL}, contate os administradores do Receita!`,
-      )
+      );
     }
-  }, [URL])
+  }, []);
 
   function handleFavorite() {
-    setIsFavorite((prev) => !prev)
+    setIsFavorite(prev => !prev);
   }
 
-  /** Buscando receita na lista de receitas "mockadas" */
   useEffect(() => {
-    const foundedRecipe = recipes.find((recipe) => recipe.id === recipeId)
+    const fetchRecipe = async () => {
+      try {
+        const foundRecipe = await getRecipeById(recipeId);
+        setRecipe(foundRecipe);
+        setIsFavorite(foundRecipe.isFavorite);
+      } catch (error) {
+        console.error('Erro ao buscar a receita:', error);
+      }
+    };
 
-    if (foundedRecipe) {
-      setRecipe(foundedRecipe)
-      setIsFavorite(foundedRecipe.isFavorite)
-    }
-  }, [])
+    fetchRecipe();
+  }, []);
 
   return (
     <View className="flex-1">
       <StatusBar style="dark" />
 
       <ImageBackground
-        source={{ uri: recipe?.imgUrl }}
+        source={{ uri: recipe?.photo }}
         resizeMode="cover"
         className="relative flex-[0.6] items-center justify-center"
       >
@@ -95,7 +105,7 @@ export default function RecipeDetails({
             {recipe?.name}
           </Text>
           <Text className="-mt-2 font-body text-lg text-zinc-50 shadow-xl">
-            por {recipe?.author}
+            por {recipe?.creator.name}
           </Text>
         </View>
       </ImageBackground>
@@ -111,7 +121,7 @@ export default function RecipeDetails({
             </Text>
             <TouchableOpacity
               activeOpacity={0.7}
-              onPress={() => setShowFullInstructions((prev) => !prev)}
+              onPress={() => setShowFullInstructions(prev => !prev)}
             >
               {showFullInstructions ? (
                 <Text className="mt-2 font-body text-lg text-zinc-900">
@@ -158,5 +168,5 @@ export default function RecipeDetails({
         </ImageBackground>
       </ScrollView>
     </View>
-  )
+  );
 }
