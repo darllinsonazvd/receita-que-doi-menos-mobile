@@ -13,7 +13,7 @@ import * as SecureStore from 'expo-secure-store'
 
 import { Header } from '../components/Header'
 import { RecipeCard } from '../components/RecipeCard'
-
+import { useFocusEffect } from '@react-navigation/native'
 import Background from '../assets/img/bg-register.png'
 import { SecureStoreKeys } from '../utils/enums/secure-store-keys'
 import { clearString } from '../utils/functions/clear-string'
@@ -91,14 +91,18 @@ export default function Home({ navigation }: HomeProps) {
 
       privateApi.get(`user/info/${decodedToken.user_id}`).then((response) => {
         const { favoriteMealsID } = response.data
-        console.log(favoriteMealsID)
         setFavoriteRecipes(favoriteMealsID)
       })
     })
   }, [])
 
+  useFocusEffect(
+    React.useCallback(() => {
+      fetchRecipes()
+    }, []),
+  )
+
   const favorited = (recipeId: string): boolean => {
-    console.log(favoriteRecipes.includes(recipeId))
     return favoriteRecipes.includes(recipeId)
   }
 

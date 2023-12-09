@@ -7,6 +7,7 @@ import {
   TouchableOpacity,
   View,
   Image,
+  Alert,
 } from 'react-native'
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view'
 import { z } from 'zod'
@@ -22,6 +23,7 @@ import { AuthContext } from '../auth/AuthenticationContext'
 import { publicApi } from '../lib/api'
 
 import LogoMixed from '../assets/img/logo-red-yellow.png'
+import { selectPhoto, decriptBase64ToURI } from '../utils/functions/pick-photo'
 
 type RegisterProps = {
   navigation: any
@@ -29,6 +31,8 @@ type RegisterProps = {
 
 export default function Register({ navigation }: RegisterProps) {
   const { signIn } = useContext(AuthContext)
+  const [profilePhotoBase64, setProfilePhotoBase64] = useState<any>(' ')
+  const [profilePhotoUri, setProfilePhotoUri] = useState<any>()
 
   const registerSchema = z.object({
     name: z
@@ -67,10 +71,15 @@ export default function Register({ navigation }: RegisterProps) {
    * @param data Payload com os dados do formulário
    */
   function handleRegister(data: Register) {
+    const payload = {
+      name: data.name,
+      email: data.email,
+      password: data.password,
+      profilePhoto: profilePhotoBase64,
+    }
     setIsLoading(true)
-
     publicApi
-      .post('/auth/register', data)
+      .post('/auth/register', payload)
       .then(() => {
         publicApi
           .post('/auth/login', { email: data.email, password: data.password })
@@ -104,8 +113,14 @@ export default function Register({ navigation }: RegisterProps) {
       })
   }
 
+  async function changePhoto() {
+    const base64 = await selectPhoto()
+    setProfilePhotoBase64(base64)
+    await setProfilePhotoUri(decriptBase64ToURI(base64))
+  }
+
   return (
-    <SafeAreaView className="flex-1 bg-zinc-50 px-4">
+    <SafeAreaView className="mt-4 flex-1 bg-zinc-50 p-4">
       <Spinner
         visible={isLoading}
         textContent="Aguarde..."
@@ -115,7 +130,7 @@ export default function Register({ navigation }: RegisterProps) {
       />
 
       <StatusBar style="dark" backgroundColor="transparent" />
-      <View className="relative mt-4 items-center justify-center">
+      <View className="relative mt-4   items-center justify-center">
         <TouchableOpacity
           activeOpacity={0.7}
           className="absolute -top-0.5 left-4"
@@ -146,7 +161,27 @@ export default function Register({ navigation }: RegisterProps) {
         <Text className="mt-2 text-center font-title text-xl">
           Antes, vamos precisar de algumas informações ⬇
         </Text>
-
+        <View className="w-full flex-col items-center rounded-2xl bg-zinc-100 p-4">
+          <View className="relative h-24 w-24 items-center justify-center rounded-full border border-zinc-300">
+            <Image
+              source={{ uri: profilePhotoUri }}
+              alt="sei não"
+              style={{ width: 90, height: 90, borderRadius: 50 }}
+            />
+            <TouchableOpacity
+              activeOpacity={0.7}
+              className="absolute bottom-0 right-0 "
+              onPress={() => changePhoto()}
+            >
+              <View className="h-6 w-6 items-center justify-center rounded-full bg-primary">
+                <Ionicons name="pencil-outline" size={12} color="#fff" />
+              </View>
+            </TouchableOpacity>
+          </View>
+          <Text className="mt- font-title">
+            Escolha uma boa foto, cozinheiro! 📷
+          </Text>
+        </View>
         <View className="mt-4 flex-1">
           {/* Name */}
           <Text className="font-title text-lg leading-relaxed text-zinc-900">
