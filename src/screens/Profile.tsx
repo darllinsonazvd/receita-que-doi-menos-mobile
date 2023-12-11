@@ -13,14 +13,17 @@ import * as SecureStore from 'expo-secure-store'
 
 import { AuthContext } from '../auth/AuthenticationContext'
 
-import BgRecipe from '../assets/img/bg-recipe.png'
 import { SecureStoreKeys } from '../utils/enums/secure-store-keys'
 import { JwtDecode } from '../utils/types/jwt'
 import { jwtDecode } from '../utils/functions/jwt-decode'
 import { privateApi } from '../lib/api'
 import { decriptBase64ToURI, selectPhoto } from '../utils/functions/pick-photo'
+
 import Spinner from 'react-native-loading-spinner-overlay'
 import Toast from 'react-native-toast-message'
+
+import BgRecipe from '../assets/img/bg-recipe.png'
+import userDefaultPhoto from '../assets/img/profile-template.jpg'
 
 type ProfileProps = {
   navigation: any
@@ -60,12 +63,29 @@ export default function Profile({ navigation }: ProfileProps) {
         setProfilePhotoUri(fileuri)
         Toast.show({
           type: 'success',
-          text1: `Receita Favoritada com Sucesso!`,
-          text2: 'Veja suas receitas favoritas na sua aba de perfil',
+          text1: `Foto definida com sucesso!`,
           visibilityTime: 3000,
           position: 'bottom',
         })
-        console.log('passou do toast')
+      })
+  }
+
+  function fetchUserData(userId: string) {
+    setIsLoading(true)
+    privateApi
+      .get(`/user/info/${userId}`)
+      .then((response) => {
+        if (response.data.profilePhoto.trim().length > 0) {
+          const profilePic = decriptBase64ToURI(response.data.profilePhoto)
+          setProfilePhotoUri(profilePic)
+        } else {
+          setProfilePhotoUri('')
+        }
+
+        setIsLoading(false)
+      })
+      .catch((error) => {
+        console.error('erro no fetch: ', error)
       })
   }
 
@@ -77,20 +97,6 @@ export default function Profile({ navigation }: ProfileProps) {
       fetchUserData(decodedToken.user_id)
     })
   }, [])
-
-  const fetchUserData = (userid: string) => {
-    setIsLoading(true)
-    privateApi
-      .get(`/user/info/${userid}`)
-      .then((response) => {
-        const profilePic = decriptBase64ToURI(response.data.profilePhoto)
-        setProfilePhotoUri(profilePic)
-        setIsLoading(false)
-      })
-      .catch((error) => {
-        console.error('erro no fetch:', error)
-      })
-  }
 
   return (
     <View className="flex-1 bg-zinc-100" style={{ paddingTop: top }}>
@@ -117,11 +123,19 @@ export default function Profile({ navigation }: ProfileProps) {
       <ImageBackground source={BgRecipe} className="flex-1 p-4">
         <View className="w-full flex-col items-center rounded-2xl bg-zinc-100 p-4">
           <View className="relative h-24 w-24 items-center justify-center rounded-full border border-zinc-300">
-            <Image
-              source={{ uri: profilePhotoUri }}
-              alt=""
-              style={{ width: 90, height: 90, borderRadius: 50 }}
-            />
+            {profilePhotoUri ? (
+              <Image
+                source={{ uri: profilePhotoUri }}
+                alt=""
+                style={{ width: 90, height: 90, borderRadius: 50 }}
+              />
+            ) : (
+              <Image
+                source={userDefaultPhoto}
+                alt=""
+                style={{ width: 90, height: 90, borderRadius: 50 }}
+              />
+            )}
 
             <TouchableOpacity
               activeOpacity={0.7}

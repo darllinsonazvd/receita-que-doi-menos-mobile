@@ -7,7 +7,6 @@ import {
   TouchableOpacity,
   View,
   Image,
-  Alert,
 } from 'react-native'
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view'
 import { z } from 'zod'
@@ -21,9 +20,10 @@ import * as SecureStore from 'expo-secure-store'
 import { SecureStoreKeys } from '../utils/enums/secure-store-keys'
 import { AuthContext } from '../auth/AuthenticationContext'
 import { publicApi } from '../lib/api'
+import { selectPhoto, decriptBase64ToURI } from '../utils/functions/pick-photo'
 
 import LogoMixed from '../assets/img/logo-red-yellow.png'
-import { selectPhoto, decriptBase64ToURI } from '../utils/functions/pick-photo'
+import userDefaultPhoto from '../assets/img/profile-template.jpg'
 
 type RegisterProps = {
   navigation: any
@@ -163,11 +163,20 @@ export default function Register({ navigation }: RegisterProps) {
         </Text>
         <View className="w-full flex-col items-center rounded-2xl bg-zinc-100 p-4">
           <View className="relative h-24 w-24 items-center justify-center rounded-full border border-zinc-300">
-            <Image
-              source={{ uri: profilePhotoUri }}
-              alt="sei não"
-              style={{ width: 90, height: 90, borderRadius: 50 }}
-            />
+            {profilePhotoUri ? (
+              <Image
+                source={{ uri: profilePhotoUri }}
+                alt="Foto de perfil"
+                style={{ width: 90, height: 90, borderRadius: 50 }}
+              />
+            ) : (
+              <Image
+                source={userDefaultPhoto}
+                alt="Foto de perfil"
+                style={{ width: 90, height: 90, borderRadius: 50 }}
+              />
+            )}
+
             <TouchableOpacity
               activeOpacity={0.7}
               className="absolute bottom-0 right-0 "
