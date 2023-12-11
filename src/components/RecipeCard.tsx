@@ -93,7 +93,14 @@ export function RecipeCard({
         borderBottomLeftRadius: 60,
       }}
     >
-      {/* Restante do seu código... */}
+      <View
+        className="absolute left-0 top-0 h-full w-full bg-zinc-950/30"
+        style={{
+          borderRadius: 30,
+          borderTopRightRadius: 60,
+          borderBottomLeftRadius: 60,
+        }}
+      />
       {showFavoriteButton && (
         <TouchableOpacity
           onPress={handleFavorite}

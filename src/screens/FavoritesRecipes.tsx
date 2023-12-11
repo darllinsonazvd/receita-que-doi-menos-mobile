@@ -10,12 +10,12 @@ import {
 import { useSafeAreaInsets } from 'react-native-safe-area-context'
 import { JwtDecode } from '../utils/types/jwt'
 import Ionicons from '@expo/vector-icons/Ionicons'
-import { SecureStoreKeys } from '../utils/enums/secure-store-keys';
-import * as SecureStore from 'expo-secure-store';
-import { privateApi } from '../lib/api';
-import { jwtDecode } from '../utils/functions/jwt-decode';
+import { SecureStoreKeys } from '../utils/enums/secure-store-keys'
+import * as SecureStore from 'expo-secure-store'
+import { privateApi } from '../lib/api'
+import { jwtDecode } from '../utils/functions/jwt-decode'
 import { RecipeCard } from '../components/RecipeCard'
-import { Recipe } from '../utils/types/recipe';
+import { Recipe } from '../utils/types/recipe'
 
 import Background from '../assets/img/bg-register.png'
 
@@ -27,20 +27,20 @@ export default function FavoritesRecipes({
   navigation,
 }: FavoritesRecipesProps) {
   const { top } = useSafeAreaInsets()
-  const [recipes, setRecipes] = useState<Recipe[]>([]);
-  const [userInfo, setUserInfo] = useState<JwtDecode | null>(null);
+  const [recipes, setRecipes] = useState<Recipe[]>([])
+  const [userInfo, setUserInfo] = useState<JwtDecode | null>(null)
 
   const fetchRecipes = () => {
     if (userInfo) {
-      const { user_id } = userInfo; 
+      const { user_id } = userInfo
       privateApi
         .get(`/user/favoriteRecipes/${user_id}`)
         .then((response) => {
-          setRecipes(response.data);
+          setRecipes(response.data)
         })
         .catch((error) => {
-          console.error('Erro ao buscar receitas:', error);
-        });
+          console.error('Erro ao buscar receitas:', error)
+        })
     }
   }
   useEffect(() => {
@@ -53,10 +53,9 @@ export default function FavoritesRecipes({
 
   useEffect(() => {
     if (userInfo) {
-      fetchRecipes();
+      fetchRecipes()
     }
-  }, [userInfo]);
-
+  }, [userInfo])
 
   return (
     <View className="flex-1 bg-zinc-100" style={{ paddingTop: top }}>
@@ -102,6 +101,7 @@ export default function FavoritesRecipes({
                   key={recipe.id}
                   recipe={recipe}
                   showFavoriteButton={true}
+                  favoritedRecipe={true}
                 />
               </TouchableOpacity>
             )

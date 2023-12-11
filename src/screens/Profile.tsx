@@ -1,25 +1,35 @@
-import { useContext, useEffect, useState } from 'react'
+import React, { useContext, useEffect, useState } from 'react'
 import { StatusBar } from 'expo-status-bar'
 import { useSafeAreaInsets } from 'react-native-safe-area-context'
 import {
-  Alert,
   ImageBackground,
   Text,
   TouchableOpacity,
   View,
+  Image,
 } from 'react-native'
 import Ionicons from '@expo/vector-icons/Ionicons'
 import * as SecureStore from 'expo-secure-store'
 
 import { AuthContext } from '../auth/AuthenticationContext'
 
-import BgRecipe from '../assets/img/bg-recipe.png'
 import { SecureStoreKeys } from '../utils/enums/secure-store-keys'
 import { JwtDecode } from '../utils/types/jwt'
 import { jwtDecode } from '../utils/functions/jwt-decode'
+import { privateApi } from '../lib/api'
+import { decriptBase64ToURI, selectPhoto } from '../utils/functions/pick-photo'
+
+import Spinner from 'react-native-loading-spinner-overlay'
+import Toast from 'react-native-toast-message'
+
+import BgRecipe from '../assets/img/bg-recipe.png'
+import userDefaultPhoto from '../assets/img/profile-template.jpg'
 
 type ProfileProps = {
   navigation: any
+  name: string
+  email: string
+  profilePhoto: string
 }
 
 export default function Profile({ navigation }: ProfileProps) {
@@ -28,6 +38,8 @@ export default function Profile({ navigation }: ProfileProps) {
   const { signOut } = useContext(AuthContext)
 
   const [userInfo, setUserInfo] = useState<JwtDecode | null>(null)
+  const [profilePhotoUri, setProfilePhotoUri] = useState<string>('')
+  const [isLoading, setIsLoading] = useState<boolean>(false)
 
   /**
    * Desconectar usuário da aplicação
@@ -41,10 +53,40 @@ export default function Profile({ navigation }: ProfileProps) {
     signOut()
   }
 
-  function changePhoto() {
-    Alert.alert(
-      'Nosso time está trabalhando com carinho nessa funcionalidade 😁. Aguarde as próximas atualizações!',
-    )
+  async function changePhoto() {
+    const base64 = await selectPhoto()
+    const fileuri = await decriptBase64ToURI(base64)
+    const data = { base64photo: base64 }
+    privateApi
+      .put(`/user/profile/photo/${userInfo?.user_id}`, data)
+      .then(() => {
+        setProfilePhotoUri(fileuri)
+        Toast.show({
+          type: 'success',
+          text1: `Foto definida com sucesso!`,
+          visibilityTime: 3000,
+          position: 'bottom',
+        })
+      })
+  }
+
+  function fetchUserData(userId: string) {
+    setIsLoading(true)
+    privateApi
+      .get(`/user/info/${userId}`)
+      .then((response) => {
+        if (response.data.profilePhoto.trim().length > 0) {
+          const profilePic = decriptBase64ToURI(response.data.profilePhoto)
+          setProfilePhotoUri(profilePic)
+        } else {
+          setProfilePhotoUri('')
+        }
+
+        setIsLoading(false)
+      })
+      .catch((error) => {
+        console.error('erro no fetch: ', error)
+      })
   }
 
   useEffect(() => {
@@ -52,11 +94,19 @@ export default function Profile({ navigation }: ProfileProps) {
     SecureStore.getItemAsync(SecureStoreKeys.TOKEN).then((token) => {
       const decodedToken = jwtDecode(token || '')
       setUserInfo(decodedToken)
+      fetchUserData(decodedToken.user_id)
     })
   }, [])
 
   return (
     <View className="flex-1 bg-zinc-100" style={{ paddingTop: top }}>
+      <Spinner
+        visible={isLoading}
+        textContent="Aguarde..."
+        textStyle={{ color: '#fff', fontFamily: 'Baloo2_400Regular' }}
+        animation="fade"
+        overlayColor="rgba(0, 0, 0, 0.5)"
+      />
       <StatusBar style="dark" backgroundColor="transparent" />
 
       <View className="relative mt-4 items-center justify-center pb-4">
@@ -73,7 +123,19 @@ export default function Profile({ navigation }: ProfileProps) {
       <ImageBackground source={BgRecipe} className="flex-1 p-4">
         <View className="w-full flex-col items-center rounded-2xl bg-zinc-100 p-4">
           <View className="relative h-24 w-24 items-center justify-center rounded-full border border-zinc-300">
-            <Text className="text-5xl">👨‍🍳</Text>
+            {profilePhotoUri ? (
+              <Image
+                source={{ uri: profilePhotoUri }}
+                alt=""
+                style={{ width: 90, height: 90, borderRadius: 50 }}
+              />
+            ) : (
+              <Image
+                source={userDefaultPhoto}
+                alt=""
+                style={{ width: 90, height: 90, borderRadius: 50 }}
+              />
+            )}
 
             <TouchableOpacity
               activeOpacity={0.7}

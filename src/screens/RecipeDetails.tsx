@@ -42,8 +42,8 @@ export default function RecipeDetails({
   const [isFavorite, setIsFavorite] = useState(false)
   const [showFullInstructions, setShowFullInstructions] = useState(false)
 
-  const handleOpenVideo = useCallback(async () => {
-    const URL = recipe?.video || 'https://youtube.com/'
+  const handleOpenVideo = async (url: string) => {
+    const URL = url || 'https://youtube.com/'
     const supported = await Linking.canOpenURL(URL)
 
     if (supported) {
@@ -53,7 +53,7 @@ export default function RecipeDetails({
         `Não foi possível acessar a url: ${URL}, contate os administradores do Receita!`,
       )
     }
-  }, [])
+  }
 
   function handleFavorite() {
     setIsFavorite((prev) => !prev)
@@ -143,12 +143,7 @@ export default function RecipeDetails({
               Ingredientes
             </Text>
             {recipe?.ingredients.map((ingredient: string, index: number) => (
-              <IngredientItem
-                key={index}
-                quantity={100}
-                measure="mg"
-                name={ingredient}
-              />
+              <IngredientItem key={index} name={ingredient} />
             ))}
           </View>
           {recipe?.video ? (
@@ -157,7 +152,10 @@ export default function RecipeDetails({
                 Tá enrolado? Assista esse vídeo!
               </Text>
 
-              <TouchableOpacity activeOpacity={0.7} onPress={handleOpenVideo}>
+              <TouchableOpacity
+                activeOpacity={0.7}
+                onPress={() => handleOpenVideo(recipe.video)}
+              >
                 <Text className="mt-2 font-body text-lg text-zinc-900">
                   Oba! Nosso(a) 👩‍🍳 Chef 👨‍🍳 liberou um vídeo sobre a receita,
                   para assistir{' '}
